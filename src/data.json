@@ -1,0 +1,76 @@
+{
+    "HomeChambers": [
+        {
+            "title":"0x...FE5 chamber",
+            "activeProposal":1,
+            "status":"created",
+            "address":"0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+            "goveranceToken":"0x8eaD0E8FEc8319Fd62C8508c71a90296EfD4F042",
+            "imageURL":"Loreum.jpeg"
+        },
+        {
+            "title":"Aave chamber",
+            "activeProposal":2,
+            "status":"joined",
+            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "imageURL":"aave.webp"
+        },
+        {
+            "title":"ENS chamber",
+            "activeProposal":1,
+            "status":"join",
+            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "imageURL":"ens.png"
+        },
+        {
+            "title":"Uniswap chamber ",
+            "activeProposal":1,
+            "status":"join",
+            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "imageURL":"uniswap.webp"
+        },
+        {
+            "title":"GITCOIN chamber ",
+            "activeProposal":1,
+            "status":"join",
+            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "imageURL":"gitcoin.png"
+        },
+        {
+            "title":"ApeCoin chamber ",
+            "activeProposal":2,
+            "status":"joined",
+            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "imageURL":"Apecoin.png"
+        },
+        {
+            "title":"Loruem chamber ",
+            "activeProposal":1,
+            "status":"created",
+            "address":"0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+            "goveranceToken":"0x8eaD0E8FEc8319Fd62C8508c71a90296EfD4F042",
+            "imageURL":""
+        },
+        {
+            "title":"ENS chamber",
+            "activeProposal":1,
+            "status":"join",
+            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "imageURL":"ens.png"
+        },
+        {
+            "title":"Uniswap chamber",
+            "activeProposal":1,
+            "status":"join",
+            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "imageURL":"uniswap.webp"
+        }
+    ]
+}
