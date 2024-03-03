@@ -1,76 +1,103 @@
 {
     "HomeChambers": [
         {
-            "title":"0x...FE5 chamber",
+            "title":"ApeCoin",
             "activeProposal":1,
             "status":"created",
-            "address":"0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-            "goveranceToken":"0x8eaD0E8FEc8319Fd62C8508c71a90296EfD4F042",
-            "imageURL":"Loreum.jpeg"
+            "serial":"1",
+            "chamber":"0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0x8eaD0E8FEc8319Fd62C8508c71a90296EfD4F042",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"apecoin.eth.webp"
         },
         {
-            "title":"Aave chamber",
+            "title":"Aave",
             "activeProposal":2,
             "status":"joined",
-            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
-            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
-            "imageURL":"aave.webp"
+            "serial":"2",
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"aave.eth.webp"
         },
         {
-            "title":"ENS chamber",
+            "title":"ENS",
             "activeProposal":1,
             "status":"join",
-            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
-            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
-            "imageURL":"ens.png"
+            "serial":"3",
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"ens.eth.jpeg"
         },
         {
-            "title":"Uniswap chamber ",
+            "title":"Uniswap",
             "activeProposal":1,
             "status":"join",
-            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
-            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
-            "imageURL":"uniswap.webp"
+            "serial":"4",
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"uniswapgovernance.eth.webp"
         },
         {
-            "title":"GITCOIN chamber ",
+            "title":"GITCOIN",
             "activeProposal":1,
             "status":"join",
-            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
-            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
-            "imageURL":"gitcoin.png"
+            "serial":"5",
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"gitcoindao.eth.webp"
         },
         {
-            "title":"ApeCoin chamber ",
+            "title":"Loreum",
             "activeProposal":2,
             "status":"joined",
-            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
-            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
-            "imageURL":"Apecoin.png"
+            "serial":"6",
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"loreum.eth.webp"
         },
         {
-            "title":"Loruem chamber ",
+            "title":"Lido",
             "activeProposal":1,
             "status":"created",
-            "address":"0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-            "goveranceToken":"0x8eaD0E8FEc8319Fd62C8508c71a90296EfD4F042",
+            "serial":"7",
+            "chamber":"0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0x8eaD0E8FEc8319Fd62C8508c71a90296EfD4F042",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"lido.eth.webp"
+        },
+        {
+            "title":"Decentraland",
+            "activeProposal":1,
+            "status":"join",
+            "serial":"8",
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
+            "imageURL":"decentraland.eth.webp"
+        },
+        {
+            "title":"Starknet",
+            "activeProposal":1,
+            "status":"join",
+            "serial":"9",
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "deployer":"0x8e1aa1674d9fc9f0dca4a4d31db85e65d216666c",
+            "govToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
+            "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
             "imageURL":""
-        },
-        {
-            "title":"ENS chamber",
-            "activeProposal":1,
-            "status":"join",
-            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
-            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
-            "imageURL":"ens.png"
-        },
-        {
-            "title":"Uniswap chamber",
-            "activeProposal":1,
-            "status":"join",
-            "address":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
-            "goveranceToken":"0xF3dE3C0d654FDa23daD170f0f320a92172509127",
-            "imageURL":"uniswap.webp"
         }
     ]
 }

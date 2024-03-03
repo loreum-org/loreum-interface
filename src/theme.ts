@@ -1,11 +1,7 @@
 import { extendTheme } from "@chakra-ui/react";
-import "@fontsource/cairo";
 
 const theme = extendTheme({
-  fonts: {
-    heading: `'Cairo', sans-serif`,
-  },
-  themeConfig: {
+  config: {
     initialColorMode: 'dark', // 'dark' | 'light'
     useSystemColorMode: false,
   }

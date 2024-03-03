@@ -23,7 +23,7 @@ function Search() {
   const setQuery = useQueryStore((state)=> state.setQuery)
   return (
     <>
-      <Grid templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} pt={4} opacity={'70%'} fontFamily={'Cairo'} rowGap={2} alignItems={'center'}>
+      <Grid templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} pt={4} fontFamily={'Cairo'} rowGap={2} alignItems={'center'}>
             <Hide breakpoint="(max-width: 430px)">
                 <Box pl={'5px'}>
                     {data.length} Chamber(s)
