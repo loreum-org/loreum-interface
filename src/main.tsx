@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Home from "./pages/Home";
-import Explore from "./pages/Explore";
 import Nav from "./components/NavBar";
 import Footer from "./components/Footer";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -16,6 +15,14 @@ import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { mainnet, polygon, optimism, arbitrum, base, zora, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import Chamber from "./pages/Chamber";
+import Proposal from "./pages/Proposal";
+import Assests from "./pages/Assest";
+import Transaction from "./pages/Transaction";
+import Leaderboard from "./pages/Leaderboard";
+import Forum from "./pages/Forum";
+import Setting from "./pages/Setting";
+import ChamberHome from "./pages/ChamberHome";
 
 const router = createBrowserRouter([
   {
@@ -24,8 +31,38 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
   },
   {
-    path: "/explore",
-    element: <Explore />,
+    path: "/chamber/:address",
+    element: <Chamber/>,
+    children:[
+      {
+        path:'/chamber/:address/',
+        element:<ChamberHome/>
+      },
+      {
+        path:'/chamber/:address/proposal',
+        element:<Proposal/>
+      },
+      {
+        path:'/chamber/:address/assest',
+        element:<Assests/>
+      },
+      {
+        path:'/chamber/:address/transaction',
+        element:<Transaction/>
+      },
+      {
+        path:'/chamber/:address/leaderboard',
+        element:<Leaderboard/>
+      },
+      {
+        path:'/chamber/:address/forum',
+        element:<Forum/>
+      },
+      {
+        path:'/chamber/:address/setting',
+        element:<Setting/>
+      }
+    ]
   },
 ]);
 

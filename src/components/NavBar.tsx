@@ -4,7 +4,7 @@ import {
   Hide, Grid, Input, Text, InputRightElement,
   Popover, PopoverTrigger, PopoverContent,
   PopoverHeader, PopoverBody, PopoverArrow,
-  PopoverCloseButton,Drawer,DrawerBody,
+  PopoverCloseButton,Drawer,DrawerBody, Link as Clink,
   DrawerFooter, DrawerHeader, DrawerOverlay,
   DrawerContent, DrawerCloseButton, useDisclosure,
   Tooltip, Center, Accordion, AccordionItem,
@@ -21,7 +21,6 @@ import { CustomConnectButton } from "../components/Connect";
 
 import LoreumLogoWhite from "../assets/LoreumLogoWhite.svg"
 import LoreumLogoBlack from "../assets/LoreumLogoBlack.svg"
-
 
 function Nav() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -200,15 +199,21 @@ function Nav() {
                         <Button variant={"solid"} size={"md"}>
                           <FaDiscord />
                         </Button>
-                        <Button variant={"solid"} size={"md"}>
-                          <FaXTwitter />
-                        </Button>
-                        <Button variant={"solid"} size={"md"}>
-                          <FaTelegramPlane />
-                        </Button>
-                        <Button variant={"solid"} size={"md"}>
-                          <HiOutlineMail />
-                        </Button>
+                        <Clink href="https://twitter.com/loreumdao" isExternal>
+                          <Button variant={"solid"} size={"md"}>
+                            <FaXTwitter />
+                          </Button>
+                        </Clink>
+                        <Clink href="#" isExternal>
+                          <Button variant={"solid"} size={"md"}>
+                            <FaTelegramPlane />
+                          </Button>
+                        </Clink>
+                        <Clink href="mailto:invest@loreum.org" isExternal>
+                          <Button variant={"solid"} size={"md"}>
+                            <HiOutlineMail />
+                          </Button>
+                        </Clink>
                         <Button
                           variant={"solid"}
                           size={"md"}

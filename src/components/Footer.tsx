@@ -28,24 +28,32 @@ function Footer(){
                                 </Flex>
                                 <Grid templateColumns={'repeat(4, 1fr)'} gap={'1rem'}>
                                     <GridItem>
-                                        <Button>
-                                            <FaDiscord/>
-                                        </Button>
+                                        <Link href="#" isExternal>
+                                            <Button>
+                                                <FaDiscord/>
+                                            </Button>
+                                        </Link>
                                     </GridItem>
                                     <GridItem>
-                                        <Button>
-                                            <FaXTwitter/>
-                                        </Button>
+                                        <Link href="https://twitter.com/loreumdao" isExternal>
+                                            <Button>
+                                                <FaXTwitter/>
+                                            </Button>
+                                        </Link>
                                     </GridItem>
                                     <GridItem>
-                                        <Button>
-                                            <FaTelegramPlane/>
-                                        </Button>
+                                        <Link href="#" isExternal>
+                                            <Button>
+                                                <FaTelegramPlane/>
+                                            </Button>
+                                        </Link>
                                     </GridItem>
                                     <GridItem>
-                                        <Button>
-                                            <HiOutlineMail/>
-                                        </Button>
+                                        <Link href='mailto:invest@loreum.org'>
+                                            <Button>
+                                                <HiOutlineMail/>
+                                            </Button>
+                                        </Link>
                                     </GridItem>
                                 </Grid>
                             </Flex>
@@ -76,14 +84,14 @@ function Footer(){
                                             Developer
                                         </Text>
                                     </h2>
-                                    <Link href="#" isExternal>
-                                        Tech Docs
-                                    </Link>
-                                    <Link href="#" isExternal>
+                                    <Link href="https://github.com/loreum-org/" isExternal>
                                         Github
                                     </Link>
                                     <Link href="#" isExternal>
                                         Guides
+                                    </Link>
+                                    <Link href="#" isExternal>
+                                        Tech Docs
                                     </Link>
                                 </Flex>
                                 <Flex rowGap={'1rem'} flexFlow={'column'}>
@@ -131,7 +139,7 @@ function Footer(){
             </Grid>
         </Show>
         <Center h={['50px', '50px']} borderTop={'1px'} borderColor={bg}>
-            <Text fontSize={'sm'} fontWeight={'medium'} opacity={'50%'} >© 2024 Loreum Labs Ltd. | All rights reserved</Text>
+            <Text fontSize={'sm'} fontWeight={'medium'} opacity={'50%'} >© 2024 Loreum DAO LLC | All rights reserved</Text>
         </Center>
         </>
     )

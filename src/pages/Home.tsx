@@ -2,7 +2,7 @@ import {
   Box,
   Button,
   Container,
-  Flex,
+  Flex
 } from "@chakra-ui/react";
 
 import Data from "../data.json";
@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import Search  from "../components/Search";
 
 import ChamberCard  from "../components/ChamberCard"
+import ChamberCardSkeleton from "../components/ChamberCardSkeleton";
 
 function Home() {
   const data = Data.HomeChambers;
@@ -20,16 +21,19 @@ function Home() {
         <Search/>
         <Flex rowGap={8} p={'20px'} flexWrap={'wrap'} justifyContent={'space-evenly'}  h={'min-content'} >
           {data.map( chamber =>(
-            <Link key={chamber.chamber} to={`/chamber/${chamber.chamber}`}>
-              <ChamberCard 
-              chamber={chamber.chamber}
-              imageURL={chamber.imageURL}
-              title={chamber.title}
-              govToken={chamber.govToken}
-              memberToken={chamber.memberToken}
-              deployer={chamber.deployer}
-              serial={chamber.serial}
-              />
+            <Link key={chamber.serial} to={`/chamber/${chamber.chamber}`}>
+              {
+                data ? (
+                  <ChamberCard 
+                  title={chamber.title} // ens name
+                  imageURL={chamber.imageURL} // ens avater
+                  chamber={chamber.chamber}
+                  serial={chamber.serial}
+                  />
+                ) : (
+                  <ChamberCardSkeleton/>
+                )
+              }
             </Link>
           ))}
         </Flex>

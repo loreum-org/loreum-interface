@@ -1,5 +1,5 @@
 
-import { Card,Box, Image, Center, Flex, Tooltip, Button, useColorModeValue, Grid } from "@chakra-ui/react"
+import { Card,Box,Text, Image, Center, Flex, Tooltip, Button, useColorModeValue, Grid } from "@chakra-ui/react"
 
 import Identicon from "./identicon"
 
@@ -7,9 +7,6 @@ interface Props {
   imageURL: string,
   title: string,
   chamber: string,
-  govToken: string
-  memberToken: string
-  deployer: string
   serial: string
 }
 
@@ -38,9 +35,9 @@ function ChamberCard({chamber ,imageURL ,title, serial}:Props) {
                 )
               }
             </Center>
-            <Flex pt={'7px'} fontSize={'xl'} justifyContent={'space-between'}>
-            {title.toUpperCase()} CHAMBER
-            </Flex>
+            <Text isTruncated pt={'8px'} pb={'2px'} px={'5px'} fontSize={'large'} >
+              {title.toUpperCase()} CHAMBER
+            </Text>
             <Flex gap={2} pt={1} >
               <Tooltip hasArrow label={'Chamber Address ' +chamber} rounded={'md'} w={'fit-content'} >
                 <Button fontSize={'xs'} h={'30px'} >
@@ -56,7 +53,7 @@ function ChamberCard({chamber ,imageURL ,title, serial}:Props) {
                   OPEN
                 </Button>
             </Flex>
-          </Card>
+        </Card>
         </>
     )
 }

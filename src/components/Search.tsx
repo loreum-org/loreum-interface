@@ -23,7 +23,7 @@ function Search() {
   const setQuery = useQueryStore((state)=> state.setQuery)
   return (
     <>
-      <Grid templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} pt={4} fontFamily={'Cairo'} rowGap={2} alignItems={'center'}>
+      <Grid templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} pt={4} fontFamily={'Cairo'} fontWeight={'bold'} rowGap={2} alignItems={'center'}>
             <Hide breakpoint="(max-width: 430px)">
                 <Box pl={'5px'}>
                     {data.length} Chamber(s)
@@ -35,7 +35,7 @@ function Search() {
                 <Input 
                 onChange={(e) => setQuery(e.currentTarget.value)}
                 value={query}
-                pr='4.5rem' variant={'filled'} placeholder='Enter Chamber Address' rounded={'full'}/>
+                pr='4.5rem' variant={'filled'} placeholder='Enter chamber address' rounded={'full'}/>
                 <InputRightElement width='5rem' borderLeft={'1px'}  borderColor={bg}>
                     <Link to={`/chamber/${query}`}>
                         <Button h='1.75rem' type={'submit'} rounded={'full'} size='sm' variant={'ghost'}>
