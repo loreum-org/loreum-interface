@@ -23,6 +23,10 @@ import Leaderboard from "./pages/Leaderboard";
 import Forum from "./pages/Forum";
 import Setting from "./pages/Setting";
 import ChamberHome from "./pages/ChamberHome";
+import Send from "./pages/Send";
+import Builder from "./pages/Builder";
+import Token from "./pages/Token";
+import NFT from "./pages/NFT";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +65,22 @@ const router = createBrowserRouter([
       {
         path:'/chamber/:address/setting',
         element:<Setting/>
+      },
+      {
+        path:'/chamber/:address/transaction/send',
+        element:<Send/>
+      },
+      {
+        path:'/chamber/:address/transaction/send/builder',
+        element:<Builder/>
+      },
+      {
+        path:'/chamber/:address/transaction/send/token',
+        element:<Token/>
+      },
+      {
+        path:'/chamber/:address/transaction/send/nft',
+        element:<NFT/>
       }
     ]
   },

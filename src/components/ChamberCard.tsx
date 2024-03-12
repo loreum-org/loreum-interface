@@ -19,7 +19,7 @@ function ChamberCard({chamber ,imageURL ,title, serial}:Props) {
             <Center pt={1}>
               {
                 imageURL ? (
-                  <Box backgroundImage={imageURL} backgroundSize={'cover'} rounded={'2xl'} w={'274px'}  height={'151px'}  >
+                  <Box backgroundImage={imageURL}  backgroundSize={'cover'} rounded={'2xl'} w={'274px'}  height={'151px'}  >
                     <Box rounded={'2xl'} backdropFilter='auto' backdropBlur={'100px'} w={'274px'}  height={'151px'} color={'white'}>
                       <Grid w={'274px'}  height={'151px'} justifyContent={'center'} alignItems={'center'}>
                       <Image height={'100px'} width={'100px'} rounded={'full'} objectFit={'cover'}  src={imageURL}></Image>

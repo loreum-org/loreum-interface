@@ -99,5 +99,53 @@
             "memberToken":"0x699add01337f25e538eb060d97c70d1bec77da57",
             "imageURL":""
         }
+    ],
+    "Assest":[
+        {
+            "chamber":"0x18f3ef6763591Afc5d5dbB90AA1A145be382dE5a",
+            "balance":"1234567890",
+            "tokens":[
+                {
+                    "token_address": "0x2d30ca6f024dbc1307ac8a1a44ca27de6f797ec22ef20627a1307243b0ab7d09",
+                    "name": "Kylin Network",
+                    "symbol": "KYL",
+                    "logo": "https://cdn.moralis.io/eth/0x67b6d479c7bb412c54e03dca8e1bc6740ce6b99c.png",
+                    "thumbnail": "https://cdn.moralis.io/eth/0x67b6d479c7bb412c54e03dca8e1bc6740ce6b99c_thumb.png",
+                    "decimals": "",
+                    "balance": "123456789",
+                    "possible_spam": "",
+                    "verified_collection": ""
+                }
+            ],
+            "nfts":[
+                {
+                    "status": "SYNCING",
+                    "total": "2000",
+                    "page": "2",
+                    "page_size": "100",
+                    "cursor": "",
+                    "result": {
+                      "token_address": "0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB",
+                      "token_id": "15",
+                      "contract_type": "ERC721",
+                      "owner_of": "0x057Ec652A4F150f7FF94f089A38008f49a0DF88e",
+                      "block_number": "88256",
+                      "block_number_minted": "88256",
+                      "token_uri": "",
+                      "metadata": "",
+                      "normalized_metadata": "",
+                      "media": "",
+                      "amount": "1",
+                      "name": "CryptoKitties",
+                      "symbol": "RARI",
+                      "token_hash": "502cee781b0fb40ea02508b21d319ced",
+                      "last_token_uri_sync": "2021-02-24T00:47:26.647Z",
+                      "last_metadata_sync": "2021-02-24T00:47:26.647Z",
+                      "possible_spam": "false",
+                      "verified_collection": "false"
+                    }
+                  }
+            ]
+        }
     ]
 }

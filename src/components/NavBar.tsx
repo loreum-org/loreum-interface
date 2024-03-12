@@ -28,7 +28,7 @@ function Nav() {
   const bg = useColorModeValue("gray.200", "gray.700");
   return (
     <>
-      <Flex px={"10px"} h={"70px"} minWidth={"100%"} justifyContent={"center"} borderBottom={"1px"} borderColor={bg}>
+      <Flex px={"10px"} h={"70px"} minWidth={"100%"} justifyContent={"center"} borderBottom={"1px"} borderColor={bg} >
         <Flex alignItems="center"width={["640px ", "768px", "1024px", "1280px"]}justifyContent={"space-between"}>
           <a href="/">
             <Flex alignItems="center">

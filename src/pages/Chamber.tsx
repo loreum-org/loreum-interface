@@ -1,13 +1,6 @@
-import { Grid, useColorModeValue, Flex } from "@chakra-ui/react";
+import { Grid, useColorModeValue, Flex, Box } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useParams, NavLink, Route, Routes } from "react-router-dom";
-import Proposal from "./Proposal";
-import Assests from "./Assest";
-import Transaction from "./Transaction";
-import Leaderboard from "./Leaderboard";
-import Forum from "./Forum";
-import Setting from "./Setting";
-import ChamberHome from "./ChamberHome";
+import { useParams, NavLink, Outlet } from "react-router-dom";
 import { LuSettings } from "react-icons/lu";
 import { RiCoinsLine } from "react-icons/ri";
 import { MdOutlineLeaderboard } from "react-icons/md";
@@ -21,7 +14,7 @@ function Chamber() {
   const { address } = useParams();
   const bg = useColorModeValue("#E2E8F0", "#2D3748");
   return (
-    <Grid justifyItems={'center'} borderTop={'1px'} borderColor={bg} minH={'90vh'} fontSize={['sm','sm','md']}>
+    <Grid justifyItems={'center'} borderTop={'1px'} borderColor={bg} minH={'90vh'} >
         <Flex maxWidth={'1280px'} w={'100%'} flexFlow={['column','row']}>
             <Grid borderRight={'1px'} borderBottom={['1px','0px']} borderColor={bg} width={[null,'163px']}>
                 <Flex width={['auto','10.3rem']} gap={3} p={3} flexFlow={['row','column']} overflowX={['scroll','auto']}>
@@ -67,7 +60,7 @@ function Chamber() {
                             <MenuButton title="Assest"/>
                         </Flex>
                     </NavLink>
-                    <NavLink end to={`/chamber/${address}/transaction`}
+                    <NavLink to={`/chamber/${address}/transaction`}
                     style={({isActive}) => {
                         return {
                             borderRadius: "0.375rem",
@@ -117,17 +110,9 @@ function Chamber() {
                     </NavLink>
                 </Flex>
             </Grid>
-            <Grid p={'1rem'} w={'full'}>
-                <Routes>
-                <Route path="/" element={<ChamberHome/>} />
-                <Route path="/proposal" element={<Proposal/>} />
-                <Route path="/assest" element={<Assests />} />
-                <Route path="/transaction" element={<Transaction />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/Forum" element={<Forum />} />
-                <Route path="/setting" element={<Setting />} />
-                </Routes>
-            </Grid>
+            <Box p={'1rem'} w={'full'} h={'full'}>
+                <Outlet/>
+            </Box>
         </Flex>
     </Grid>
   );
