@@ -10,33 +10,20 @@ import {
   } from '@chakra-ui/react'
 
   import { MdOutlineSort } from "react-icons/md";
-import Data from "../data.json";
 
 import { Link } from "react-router-dom";
-import { create } from "zustand"
-
-type State = {
-    query: string
-}
-type Action = {
-    setQuery: (query: State['query']) => void
-}
-
-const useQueryStore = create<State & Action>((set) => ({
-    query: '',
-    setQuery: (query) => set(()=> ({query: query }))
-}))
+import { useQueryStore, useChambersState } from "../hooks/store";
 
 function Search() {
-  const data = Data.HomeChambers;
   const query = useQueryStore((state)=> state.query)
   const setQuery = useQueryStore((state)=> state.setQuery)
+  const totalChambers = useChambersState((state)=> state.chamberDeployeds.length)
   return (
     <>
       <Grid templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} pt={4} rowGap={2} alignItems={'center'}>
             <Hide breakpoint="(max-width: 430px)">
                 <Box pl={'5px'}>
-                    {data.length} Chamber(s)
+                    {totalChambers} Chamber(s)
                 </Box>
             </Hide>
         <Flex  gap={2}>

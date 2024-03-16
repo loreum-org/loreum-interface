@@ -29,14 +29,14 @@ function ChamberCard({chamber ,imageURL ,title, serial}:Props) {
                 ) : (
                   <Box bg={bg1} rounded={'2xl'} w={'274px'}  height={'151px'}  >
                       <Grid w={'274px'}  height={'151px'} justifyContent={'center'} alignItems={'center'}>
-                        <Identicon  address={chamber}/>
+                        <Identicon  address={chamber} isize={100}/>
                       </Grid>
                   </Box>
                 )
               }
             </Center>
             <Text isTruncated pt={'8px'} pb={'2px'} px={'5px'} fontSize={'large'} >
-              {title.toUpperCase()} CHAMBER
+              {title?title.toUpperCase():(chamber.slice(0,4).toUpperCase()+'....'+chamber.slice(38,42).toUpperCase())} CHAMBER
             </Text>
             <Flex gap={2} pt={1} >
               <Tooltip hasArrow label={'Chamber Address ' +chamber} rounded={'md'} w={'fit-content'} >

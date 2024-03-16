@@ -14,7 +14,7 @@ function Send() {
         <Grid pb={'1rem'} fontSize={['xs','sm']} justifyContent={'space-between'} alignItems={'center'} templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} gap={3}>
         <Breadcrumb fontWeight={'semibold'}>
           <BreadcrumbItem>
-            <BreadcrumbLink as={Link} to={`/chamber/${address}`}>
+            <BreadcrumbLink>
             {address ? address.slice(0,4): ''}...{address ? address.slice(38,42) : ''}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -45,7 +45,7 @@ function Send() {
             <Center pt={1}>
                   <Box bg={bg} rounded={'2xl'} w={'274px'}  height={'100px'}  >
                       <Grid w={'274px'}  height={'100px'} justifyContent={'center'} alignItems={'center'}>
-                       <RiCoinsLine size={'5rem'}/>
+                       <RiCoinsLine size={'5rem'} opacity={'70%'}/>
                       </Grid>
                   </Box>
             </Center>
@@ -65,7 +65,7 @@ function Send() {
             <Center pt={1}>
                   <Box bg={bg} rounded={'2xl'} w={'274px'}  height={'100px'}  >
                       <Grid w={'274px'}  height={'100px'} justifyContent={'center'} alignItems={'center'}>
-                       <FiHexagon size={'5rem'}/>
+                       <FiHexagon size={'5rem'} opacity={'70%'}/>
                       </Grid>
                   </Box>
             </Center>
@@ -83,7 +83,7 @@ function Send() {
             <Center pt={1}>
                   <Box bg={bg} rounded={'2xl'} w={'274px'}  height={'100px'}  >
                       <Grid w={'274px'}  height={'100px'} justifyContent={'center'} alignItems={'center'}>
-                       <AddIcon boxSize={'4rem'}/>
+                       <AddIcon boxSize={'4rem'} opacity={'70%'}/>
                       </Grid>
                   </Box>
             </Center>

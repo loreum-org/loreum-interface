@@ -12,8 +12,8 @@ import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import "@fontsource/cairo/200.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum, base, zora, sepolia } from "wagmi/chains";
+import { WagmiProvider, http } from "wagmi";
+import { mainnet, polygon, sepolia, polygonMumbai } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import Chamber from "./pages/Chamber";
 import Proposal from "./pages/Proposal";
@@ -91,15 +91,18 @@ const queryClient = new QueryClient();
 const config = getDefaultConfig({
   appName: "Loreum",
   projectId: "YOUR_PROJECT_ID",
-  chains: [mainnet, polygon, optimism, arbitrum, base, zora, sepolia],
-  ssr: true, // If your dApp uses server side rendering (SSR)
+  chains: [mainnet, polygon, polygonMumbai, sepolia],
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`),
+  },
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ChakraProvider>
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      <div style={{ height: "100vh" }}>
+      <div style={{ minHeight: "100vh" }}>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>

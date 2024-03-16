@@ -79,7 +79,7 @@ const Transaction = () => {
       <Grid pb={'1rem'} fontSize={['xs','sm']} justifyContent={'space-between'} alignItems={'center'} templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} gap={3}>
         <Breadcrumb fontWeight={'semibold'}>
           <BreadcrumbItem>
-            <BreadcrumbLink as={Link} to={`/chamber/${address}`}>
+            <BreadcrumbLink>
             {address ? address.slice(0,4): ''}...{address ? address.slice(38,42) : ''}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -133,7 +133,7 @@ const Transaction = () => {
         <Divider/>
         <TabPanels>
           <TabPanel >
-            <Flex flexFlow={'column'} rowGap={3}>
+            <Flex flexFlow={'column'}>
              <Grid templateRows={'repeat(8, 1fr)'} gap={3}>
               <GridItem as={Button}></GridItem>
               <GridItem as={Button}></GridItem>

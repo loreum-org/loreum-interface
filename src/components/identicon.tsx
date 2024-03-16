@@ -3,7 +3,8 @@ import Jazzicon from "@metamask/jazzicon";
 import styled from "@emotion/styled";
 
 interface Props {
-  address: string
+  address: string,
+  isize: number
 }
 
 const StyledIdenticon = styled.div`
@@ -11,13 +12,13 @@ const StyledIdenticon = styled.div`
   width: 100rm;
 `;
 
-export default function Identicon({address}:Props) {
+export default function Identicon({address, isize}:Props) {
   const ref = useRef<HTMLDivElement>();
   const account = address
   useEffect(() => {
     if (account && ref.current) {
       ref.current.innerHTML = "";
-      ref.current.appendChild(Jazzicon(100, parseInt(account.slice(2, 10), 16)));
+      ref.current.appendChild(Jazzicon((isize ? isize : 100), parseInt(account.slice(2, 10), 16)));
     }
   }, [account]);
 
