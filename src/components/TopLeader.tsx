@@ -17,7 +17,7 @@ function TopLeader() {
   const chamberDetails = useQuery<chambersState>({
     queryKey: ['chamberData'],
       queryFn: async () => request(
-      import.meta.env.VITE_SUBGRAPH_URL,
+      'https://api.studio.thegraph.com/proxy/67520/loreum-registry-sepolia/v0.0.1',
       getChamberByAddress,
       {chamberAddress: address}
     ),
