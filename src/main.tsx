@@ -94,7 +94,8 @@ const config = getDefaultConfig({
   chains: [mainnet, polygon, polygonMumbai, sepolia],
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`),
+    // [sepolia.id]: http(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`),
+    [sepolia.id]: http(),
   },
 });
 

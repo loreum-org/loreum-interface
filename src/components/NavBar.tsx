@@ -21,6 +21,7 @@ import { CustomConnectButton } from "../components/Connect";
 
 import LoreumLogoWhite from "../assets/LoreumLogoWhite.svg"
 import LoreumLogoBlack from "../assets/LoreumLogoBlack.svg"
+import { links } from "../data";
 
 function Nav() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -199,12 +200,12 @@ function Nav() {
                         <Button variant={"solid"} size={"md"}>
                           <FaDiscord />
                         </Button>
-                        <Clink href="https://twitter.com/loreumdao" isExternal>
+                        <Clink href={links.twitter} isExternal>
                           <Button variant={"solid"} size={"md"}>
                             <FaXTwitter />
                           </Button>
                         </Clink>
-                        <Clink href="#" isExternal>
+                        <Clink href={links.telegram} isExternal>
                           <Button variant={"solid"} size={"md"}>
                             <FaTelegramPlane />
                           </Button>

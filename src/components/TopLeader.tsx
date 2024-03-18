@@ -1,70 +1,83 @@
 import { useReadContract } from "wagmi"
-import { chamberAbi as abi} from "../abi/chamberAbi"
-import { sepolia } from "viem/chains"
-import Moralis  from "moralis"
-import { create } from "zustand"
+import { chamberAbi } from "../abi/chamberAbi"
+import { useQuery } from '@tanstack/react-query'
 import { useParams } from "react-router-dom"
-
-// type State = {
-//   nftAddress: string[];
-// }
-
-// type Action = {
-//   addNftAddress: (nftAddress: string) => void;
-// }
-
-// const useStore = create<State & Action>((set)=>({
-//   nftAddress: [],
-//   addNftAddress: (nftAddress: string)=>{
-//     set((state)=>({
-//       nftAddress:[
-//         ...state.nftAddress,
-//         nftAddress
-//       ]
-//     }))
-//   }
-// }))
-
-// const getTokenDetail = async ({tokenID}:Props2) => {
-//   await Moralis.start({
-//     apiKey: "",
-//   })
-//   const address = "";
-//   const chain = sepolia.id;
-//   const tokenId = tokenID;
-//   const response = await Moralis.EvmApi.nft.getNFTTokenIdOwners({
-//     address,
-//     chain,
-//     tokenId,
-//   });
-//   return response.result[0].ownerOf;
-// }
+import { getChamberByAddressQuery } from "../gql/graphql"
+import request from "graphql-request"
+import { sepolia } from "viem/chains"
+import { erc20Abi } from "viem"
+import LeaderRow from "./LeaderRow"
+import { Center, Skeleton } from "@chakra-ui/react"
+import { WarningTwoIcon } from "@chakra-ui/icons"
+import { chambersState } from "../hooks/store"
 
 function TopLeader() {
-  const {address} = useParams()
-  const {data, isLoading} = useReadContract({
-    abi,
-    address: `0x${address?.slice(2.42)}`,
+  const { address } = useParams();
+  const getChamberByAddress = getChamberByAddressQuery
+  const chamberDetails = useQuery<chambersState>({
+    queryKey: ['chamberData'],
+      queryFn: async () => request(
+      import.meta.env.VITE_SUBGRAPH_URL,
+      getChamberByAddress,
+      {chamberAddress: address}
+    ),
+    staleTime: Infinity,
+  })
+
+  const leaderboard = useReadContract({
+    abi: chamberAbi,
+    address: `0x${address?.slice(2,42)}`,
     functionName:'getLeaderboard',
     chainId: sepolia.id,
   })
-  if(isLoading){
+  const govTokenSymbol = useReadContract({
+    abi: erc20Abi,
+    address: `0x${(chamberDetails.data?.chamberDeployeds[0].govToken)?.slice(2.42)}`,
+    functionName:'symbol',
+    chainId: sepolia.id,
+  })
+  if ( 
+    leaderboard.isLoading ||
+    govTokenSymbol.isLoading ||
+    chamberDetails.isLoading
+  ){
     return(
-    <>
-    Loding...
-    </>)
+      <>
+        <Skeleton rounded={'lg'} p={'10px'} pl={'10px'} w={'full'} h={30} />
+      </>
+    )
   }
+  if (leaderboard.isError ||
+    govTokenSymbol.isError ||
+    chamberDetails.isError){
+      return (
+        <>
+          Some thing went wrong please refresh
+        </>
+      )
+    }
   return (
     <div>
-      {data?.[0].toLocaleString()}
-      {data?.[1].toLocaleString()}
+      {leaderboard.data && (leaderboard.data[0].length > 0)? Array.from({length: leaderboard.data[0].length}).map((_,index)=>{
+        return (
+          <>
+            <LeaderRow 
+            key={index}
+            nftTokenID={leaderboard.data[0]?.at(index)?.toString() || '0'}
+            delegation={parseInt((leaderboard.data[1]?.at(index))?.toString() || '0', 10)}
+            govTokenSymbol={govTokenSymbol.data?.toString() || ''}
+            />
+          </>
+        )
+      }):(
+        <>
+        <Center gap={3}>
+          <WarningTwoIcon/> No Leaders
+        </Center>
+        </>
+      )}
     </div>
   )
 }
 
 export default TopLeader
-
-
-// {leaders.map(leader => (
-//   <LeaderRowData address={leader.address?leader.address:''} isize={20} delegation={leader.delegation} tokenSymbol='LORE' ensName={leader.ensName} />
-// ))}

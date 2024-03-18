@@ -11,3 +11,15 @@ query {
   }
 }
 `;
+
+export const getChamberByAddressQuery = gql`
+query getChamberByAddress($chamberAddress: String!) {
+  chamberDeployeds(where: {chamber: $chamberAddress}) {
+    chamber
+    deployer
+    govToken
+    memberToken
+    serial
+  }
+}
+`;

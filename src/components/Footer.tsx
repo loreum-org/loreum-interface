@@ -5,6 +5,7 @@ import { FaDiscord, FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
 import { HiOutlineMail } from "react-icons/hi";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { links }  from "../data.ts"
 function Footer(){
     const bg = useColorModeValue("gray.200", "gray.700");
     const colorMode = useColorMode().colorMode;
@@ -28,21 +29,21 @@ function Footer(){
                                 </Flex>
                                 <Grid templateColumns={'repeat(4, 1fr)'} gap={'1rem'}>
                                     <GridItem>
-                                        <Link href="#" isExternal>
+                                        <Link href={links.discord} isExternal>
                                             <Button>
                                                 <FaDiscord/>
                                             </Button>
                                         </Link>
                                     </GridItem>
                                     <GridItem>
-                                        <Link href="https://twitter.com/loreumdao" isExternal>
+                                        <Link href={links.twitter} isExternal>
                                             <Button>
                                                 <FaXTwitter/>
                                             </Button>
                                         </Link>
                                     </GridItem>
                                     <GridItem>
-                                        <Link href="#" isExternal>
+                                        <Link href={links.telegram} isExternal>
                                             <Button>
                                                 <FaTelegramPlane/>
                                             </Button>
@@ -84,7 +85,7 @@ function Footer(){
                                             Developer
                                         </Text>
                                     </h2>
-                                    <Link href="https://github.com/loreum-org/" isExternal>
+                                    <Link href={links.github} isExternal>
                                         Github
                                     </Link>
                                     <Link href="#" isExternal>

@@ -25,7 +25,7 @@ export interface chambersState{
     setChambers: (data: chambersState['chamberDeployeds']) => Promise<void>;
 }
 
-export const useChambersState = create<chambersState>((set)=>({
+export const useChambersStore = create<chambersState>((set)=>({
     chamberDeployeds: [],
     setChambers: async (data) => {
         set(()=>({chamberDeployeds: data}));

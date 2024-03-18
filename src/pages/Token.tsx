@@ -1,9 +1,10 @@
-import { Progress,Grid,Text, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input , Flex,Card, Center,useColorModeValue, Box, Divider, InputRightElement, GridItem} from '@chakra-ui/react'
+import { Progress,Grid,Text, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input , Flex,Card,useColorModeValue, Box, Divider, InputRightElement, GridItem} from '@chakra-ui/react'
 import {
     Menu,
     MenuButton,
     MenuList,
-    MenuItem
+    MenuItem,
+    Tooltip
   } from '@chakra-ui/react'
   import {
     Accordion,
@@ -17,29 +18,32 @@ import { Link, useParams } from 'react-router-dom'
 import { RiCoinsLine } from "react-icons/ri";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { create } from 'zustand'
-import { useChainId } from 'wagmi'
+import { useChainId, useReadContract } from 'wagmi'
 import TopLeader from '../components/TopLeader'
+import { sepolia } from 'viem/chains'
+import Sign from './Sign'
+import { chamberAbi } from '../abi/chamberAbi'
 
 type State = {
     amount: number;
     walletAddress: string;
-    ensName: string;
+    proposlId: string;
 }
 type Action = {
     setAmount: (amount: State['amount']) => void;
     setWalletAddress: (walletAddress: State['walletAddress']) => void;
-    setEnsName: (ensName: State['ensName'])=>void;
+    setProposlId: (proposlId: State['proposlId'])=>void;
 }
 
-const useStore = create<State & Action>((set)=>({
+export const useStore = create<State & Action>((set)=>({
     amount: 0,
     setAmount: (amount)=> set(()=>({amount: amount})),
 
-    walletAddress: '0x00...0000',
+    walletAddress: '0x0000000000000000000000000000000000000000',
     setWalletAddress: (walletAddress)=> set(()=>({walletAddress: walletAddress})),
 
-    ensName: 'ens',
-    setEnsName: (ensName)=> set(()=>({ensName:ensName})),
+    proposlId: '1',
+    setProposlId: (proposlId)=> set(()=>({proposlId:proposlId})),
 }))
 
 function Token() {
@@ -48,9 +52,23 @@ function Token() {
     const setAmount = useStore((state)=>state.setAmount)
     const walletAddress = useStore((state)=>state.walletAddress)
     const setWalletAddress = useStore((state)=>state.setWalletAddress)
+    const setProposlId = useStore((state)=>state.setProposlId)
     const {address}= useParams()
     const bg = useColorModeValue("gray.200", "gray.700");
-
+    const {data, isLoading} = useReadContract({
+        abi: chamberAbi,
+        address: `0x${address?.slice(2,42)}`,
+        functionName:'nonce',
+        chainId: sepolia.id,
+    })
+    setProposlId((parseInt(data?data.toString():'0')+1).toString())
+    function cancel(){
+        setWalletAddress('0x0000000000000000000000000000000000000000');
+        setAmount(0);
+        return (
+            <Button as={Link} to={`/chamber/${address}/`}>h</Button>
+        )
+    }
     return (
         <div>
             <Grid pb={'1rem'} fontSize={['xs','sm']} justifyContent={'space-between'} alignItems={'center'} templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} gap={3} >
@@ -82,13 +100,15 @@ function Token() {
             <Progress value={40} size='xs' colorScheme='blue'/>
             <Flex gap={8} p={'20px'} flexWrap={'wrap'} justifyContent={'center'}  h={'full'} overflowX={'hidden'}>
                 <Card rounded={'2xl'}  flexGrow={'grow'} bg={bg} >
-                    <Flex justifyContent={'space-between'} alignItems={'center'} py={'1rem'} px={'1.5rem'}  fontWeight={'bold'} fontSize={'lg'} gap={3} >
+                    <Flex justifyContent={'space-between'} alignItems={'center'} py={'1rem'} px={'1.5rem'}  fontWeight={'bold'} fontSize={'md'} gap={3} >
                         <Flex gap={3}>
-                        <RiCoinsLine size={'25px'}/> Token Transfer
+                        <RiCoinsLine size={'20px'}/> Token Transfer
                         </Flex>
-                        <Flex fontSize={'md'}>
-                            # 1
-                        </Flex>
+                            <Tooltip label='Proposal ID'>
+                                <Button h={'inherit'} fontSize={'md'} variant={'transparant'} isLoading={isLoading?true:false}>
+                                        # {(parseInt(data?data.toString():'0')+1).toString()}
+                                </Button>
+                            </Tooltip>
                     </Flex>
                     <Divider color={'gray.500'}/>
                     <Grid p={'20px'} flexFlow={'column'} gap={3}>
@@ -164,21 +184,25 @@ function Token() {
                         </AccordionItem>
                     </Accordion>
                     <Flex justifyContent={'end'} alignItems={'center'} p={'1rem'} fontWeight={'bold'} flexFlow={'row'} gap={2}>
-                        <Button fontSize={'sm'} w={'30%'} borderColor={'gray.500'} variant={'outline'} fontStyle={'sm'} as={Link} to={`/chamber/${address}/transaction/`}>Cancel</Button>
-                        <Button fontSize={'sm'} w={'30%'} colorScheme='blue' fontStyle={'sm'}>Sign</Button>
+                        <Button fontSize={'sm'} w={'30%'} borderColor={'gray.500'} variant={'outline'} fontStyle={'sm'} onClick={cancel}>
+                            <Link  to={`/chamber/${address}`}>Cancel</Link>
+                        </Button>
+                        <Sign/>
                     </Flex>
                 </Card>
-                <Card rounded={'2xl'} width={['full','full','382.77px']} h={'max-content'} flexGrow={'grow'} bg={bg}>
-                    <Flex justifyContent={'space-between'} alignItems={'center'} py={'1rem'} px={'1.5rem'}  fontWeight={'bold'} fontSize={'lg'} gap={3} >
+                <Card rounded={'2xl'} width={['full','full','200.77px']} h={'max-content'} flexGrow={'grow'} bg={bg}>
+                    <Flex justifyContent={'space-between'} alignItems={'center'} py={'1rem'} px={'1.5rem'}  fontWeight={'bold'} fontSize={'md'} gap={3} >
                         <Flex gap={3}>
-                            <MdOutlineLeaderboard size={'25px'}/> Top Leader
-                        </Flex>
-                        <Flex fontSize={'md'}>
-                            5
+                            <MdOutlineLeaderboard size={'20px'}/> Top Leaders
                         </Flex>
                     </Flex>
                     <Divider color={'gray.500'}/>
                     <Grid p={'20px'} flexFlow={'column'} gap={3}>
+                    <Flex justifyContent={'space-between'} fontSize={'xs'} color={'gray.500'}>
+                        <Text>NFT ID</Text>
+                        <Text>Delegation</Text>
+                    </Flex>
+                    <Divider color={'gray.500'}/>
                         <TopLeader/>
                     </Grid>
                 </Card>
