@@ -12,6 +12,6 @@ export default defineConfig({
   },
   define:{
     'process.env.VITE_SUBGRAPH_URL':JSON.stringify(process.env.VITE_SUBGRAPH_URL),
-    'process.env.VITE_ETHERSCAN_API_KEY':JSON.stringify(process.env.VITE_ETHERSCAN_API_KEY)
+    __APP_ENV__: process.env.VITE_ETHERSCAN_API_KEY,
   }
 })
