@@ -1,4 +1,4 @@
-import { Input, Button, Hide, Grid, Box, InputGroup, InputRightElement,FormControl } from "@chakra-ui/react";
+import { Input, Button, Hide, Grid, Box, InputGroup, InputRightElement,FormControl, Tooltip } from "@chakra-ui/react";
 import {
     Flex,
     Menu,
@@ -13,6 +13,7 @@ import {
 
 import { Link } from "react-router-dom";
 import { useQueryStore, useChambersStore } from "../hooks/store";
+import { isAddress } from "viem";
 
 function Search() {
   const query = useQueryStore((state)=> state.query)
@@ -31,9 +32,16 @@ function Search() {
             <InputGroup size='md'>
                 <Input isRequired onChange={(e) => setQuery(e.currentTarget.value)} placeholder="Enter Chamber" value={query} pr='4.5rem' variant={'filled'} overflow={'hidden'} rounded={'xl'}/>
                 <InputRightElement width='5rem' justifyContent={'end'}>
-                    <Button as={Link} to={`/chamber/${query}`} h='2.5rem' type={'submit'} borderLeftRadius={0} rounded={'xl'} size='sm' variant={'solid'}>
+                    {isAddress(query)?
+                    (<Button as={Link} to={`/chamber/${query}`} h='2.5rem' type={'submit'} borderLeftRadius={0} rounded={'xl'} size='sm' variant={'transparent'}>
                         Search
-                    </Button>
+                    </Button>):(
+                        <Tooltip label={'Not a valid address'}>
+                            <Button h='2.5rem' type={'submit'} borderLeftRadius={0} rounded={'xl'} size='sm' variant={'ghost'} isDisabled>
+                                Search
+                            </Button>
+                        </Tooltip>)
+                    }
                 </InputRightElement>
             </InputGroup>
             </FormControl>

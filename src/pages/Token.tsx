@@ -1,9 +1,5 @@
-import { Progress,Grid,Text, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input , Flex,Card,useColorModeValue, Box, Divider, InputRightElement, GridItem} from '@chakra-ui/react'
+import { Progress,Grid,Text, Breadcrumb, BreadcrumbItem, BreadcrumbLink, InputGroup, Button, Input , Flex,Card,useColorModeValue, Box, Divider, InputRightElement, GridItem} from '@chakra-ui/react'
 import {
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
     Tooltip
   } from '@chakra-ui/react'
   import {
@@ -13,7 +9,6 @@ import {
     AccordionPanel,
     AccordionIcon,
   } from '@chakra-ui/react'
-import { Search2Icon, ChevronDownIcon } from '@chakra-ui/icons'
 import { Link, useParams } from 'react-router-dom'
 import { RiCoinsLine } from "react-icons/ri";
 import { MdOutlineLeaderboard } from "react-icons/md";
@@ -63,7 +58,7 @@ function Token() {
     })
     setProposlId((parseInt(data?data.toString():'0')+1).toString())
     function cancel(){
-        setWalletAddress('0x0000000000000000000000000000000000000000');
+        setWalletAddress('');
         setAmount(0);
         return (
             <Button as={Link} to={`/chamber/${address}/`}>h</Button>
@@ -86,17 +81,10 @@ function Token() {
                 <BreadcrumbLink isCurrentPage>Token</BreadcrumbLink>
             </BreadcrumbItem>
             </Breadcrumb>
-            <FormControl>
-                <InputGroup size='md'>
-                    <InputLeftElement  justifyContent={'start'}>
-                            <Button type={'submit'} borderRightRadius={0} rounded={'xl'} size='sm' variant={'transparent'}>
-                                <Search2Icon/>
-                            </Button>
-                    </InputLeftElement>
-                    <Input isDisabled placeholder="Search Transaction" variant={'filled'} overflow={'hidden'} rounded={'xl'}/>
-                </InputGroup>
-            </FormControl>
+            
             </Grid>
+            {/* {formatEther(result.data?.value?result.data.value:BigInt(0), "wei")}
+            {result.data?.symbol.toString()} */}
             <Progress value={40} size='xs' colorScheme='blue'/>
             <Flex gap={8} p={'20px'} flexWrap={'wrap'} justifyContent={'center'}  h={'full'} overflowX={'hidden'}>
                 <Card rounded={'2xl'}  flexGrow={'grow'} bg={bg} >
@@ -106,7 +94,7 @@ function Token() {
                         </Flex>
                             <Tooltip label='Proposal ID'>
                                 <Button h={'inherit'} fontSize={'md'} variant={'transparant'} isLoading={isLoading?true:false}>
-                                        # {(parseInt(data?data.toString():'0')+1).toString()}
+                                    # {(parseInt(data?data.toString():'0')+1).toString()}
                                 </Button>
                             </Tooltip>
                     </Flex>
@@ -118,17 +106,7 @@ function Token() {
                                 <InputGroup>
                                     <Input onChange={(e) => setAmount(parseFloat(e.currentTarget.value)*1000000000000000000)} type={'number'} pr={'4.5rem'} placeholder="0.00" variant={'filled'} overflow={'hidden'}  rounded={'lg'}/>
                                     <InputRightElement w={'min-content'}>
-                                        <Menu placement={'bottom'} isLazy={true}>
-                                            <MenuButton as={Button} variant={'ghost'} fontSize={'xs'} rightIcon={<ChevronDownIcon />} roundedLeft={'none'}>
-                                                ETH
-                                            </MenuButton>
-                                            <MenuList>
-                                                <MenuItem>ETH</MenuItem>
-                                                <MenuItem>JBT</MenuItem>
-                                                <MenuItem>USDT</MenuItem>
-                                                <MenuItem>BLUR</MenuItem>
-                                            </MenuList>
-                                        </Menu>
+                                        {/* <TokenList/> // TODO: fetch and render the available ERC20 Token*/} 
                                     </InputRightElement>
                                 </InputGroup>
                                 <Button rounded={'lg'} fontSize={'xs'}>$0.00</Button>
@@ -184,8 +162,8 @@ function Token() {
                         </AccordionItem>
                     </Accordion>
                     <Flex justifyContent={'end'} alignItems={'center'} p={'1rem'} fontWeight={'bold'} flexFlow={'row'} gap={2}>
-                        <Button fontSize={'sm'} w={'30%'} borderColor={'gray.500'} variant={'outline'} fontStyle={'sm'} onClick={cancel}>
-                            <Link  to={`/chamber/${address}`}>Cancel</Link>
+                        <Button as={Link} to={`/chamber/${address}`} fontSize={'sm'} w={'30%'} borderColor={'gray.500'} variant={'outline'} fontStyle={'sm'} onClick={cancel}>
+                            Cancel
                         </Button>
                         <Sign/>
                     </Flex>

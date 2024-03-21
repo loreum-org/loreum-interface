@@ -14,14 +14,13 @@ import {
     Text,
     Tooltip,
   } from '@chakra-ui/react'
-import { useAccount, useConnect } from 'wagmi'
-import { injected } from 'wagmi/connectors'
+import { useAccount } from 'wagmi'
 import { useStore } from './Token';
+import { CustomConnectButton2 } from '../components/Connect2';
 
 function Sign() {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { isConnected } = useAccount()
-    const { connect } = useConnect()
     const amount = useStore((state)=>state.amount)
     const walletAddress = useStore((state)=>state.walletAddress)
     const proposalId = useStore((state)=>state.proposlId)
@@ -33,14 +32,14 @@ function Sign() {
             </>
         ): (
             <>
-            <Button onClick={() => connect({ connector: injected() })} fontSize={'sm'} w={'30%'} colorScheme='blue' fontStyle={'sm'} >Conncet</Button>
+            <CustomConnectButton2 />
             </>
         )}
 
         <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader>Sign Transaction</ModalHeader>
+            <ModalHeader>Create Proposal</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
             <Grid gap={2} px={1}>

@@ -1,4 +1,4 @@
-import { Progress, Flex, Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, Card, useColorModeValue, Center,Box } from '@chakra-ui/react'
+import { Progress, Flex, Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, Card, useColorModeValue, Center,Box} from '@chakra-ui/react'
 import {Search2Icon} from '@chakra-ui/icons'
 import { Link, useParams } from 'react-router-dom'
 import { RiCoinsLine } from "react-icons/ri";
@@ -88,7 +88,7 @@ function Send() {
                   </Box>
             </Center>
             <Flex justifyContent={'center'} alignItems={'center'} py={'1rem'} fontWeight={'bold'} flexFlow={'column'} gap={2}>
-                <Button w={'60%'} fontStyle={'sm'}>Transaction Builder</Button>
+                <Button w={'60%'} fontStyle={'sm'} as={Link} to={`/chamber/${address}/transaction/send/builder`}>Transaction Builder</Button>
                 <Flex fontSize={'10px'} fontWeight={'medium'} justifyContent={'center'}>
                 Batch multiple transactions or contract interactions
                 </Flex>

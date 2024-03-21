@@ -44,7 +44,7 @@ function ChamberCard({chamber ,imageURL ,title, serial}:Props) {
                   {chamber.slice(0,4)}....{chamber.slice(38,42)}
                 </Button>
               </Tooltip>
-              <Tooltip hasArrow label={ 'Chamebr ID is the serial number' } rounded={'md'} w={'fit-content'} >
+              <Tooltip hasArrow label={ 'Chamber ID is the serial number' } rounded={'md'} w={'fit-content'} >
                 <Button fontSize={'xs'} h={'30px'} flex={2}>
                   Chamber {serial}
                 </Button>

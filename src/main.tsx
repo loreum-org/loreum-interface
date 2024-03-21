@@ -13,7 +13,7 @@ import "@fontsource/cairo/200.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider, http } from "wagmi";
-import { mainnet, polygon, sepolia, polygonMumbai } from "wagmi/chains";
+import { mainnet, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import Chamber from "./pages/Chamber";
 import Proposal from "./pages/Proposal";
@@ -91,7 +91,7 @@ const queryClient = new QueryClient();
 const config = getDefaultConfig({
   appName: "Loreum",
   projectId: "YOUR_PROJECT_ID",
-  chains: [mainnet, polygon, polygonMumbai, sepolia],
+  chains: [mainnet, sepolia],
   transports: {
     [mainnet.id]: http(),
     // [sepolia.id]: http(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`),

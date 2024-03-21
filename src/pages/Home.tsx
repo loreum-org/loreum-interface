@@ -26,7 +26,7 @@ function Home() {
   const { data, isLoading, isError} = useQuery<chambersState>({
     queryKey: ['chamberDeployeds'],
     queryFn: async () => request(
-      'https://api.studio.thegraph.com/proxy/67520/loreum-registry-sepolia/v0.0.1',
+      import.meta.env.VITE_SUBGRAPH_URL,
       getChamberDeployeds
     ),
     staleTime: Infinity,
