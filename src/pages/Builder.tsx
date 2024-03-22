@@ -1,4 +1,4 @@
-import { Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, Progress, InputGroup, InputLeftElement, Button, Input } from "@chakra-ui/react"
+import { Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, Progress, InputGroup, InputLeftElement, Button, Input} from "@chakra-ui/react"
 import { Search2Icon } from "@chakra-ui/icons"
 import { Link, useParams } from "react-router-dom"
 import BuilderCard from "../components/BuilderCard"

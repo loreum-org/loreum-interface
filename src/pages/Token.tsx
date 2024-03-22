@@ -1,6 +1,9 @@
 import { Progress,Grid,Text, Breadcrumb, BreadcrumbItem, BreadcrumbLink, InputGroup, Button, Input , Flex,Card,useColorModeValue, Box, Divider, InputRightElement, GridItem} from '@chakra-ui/react'
 import {
-    Tooltip
+    Tooltip,
+    FormControl,
+    InputLeftElement,
+
   } from '@chakra-ui/react'
   import {
     Accordion,
@@ -18,6 +21,7 @@ import TopLeader from '../components/TopLeader'
 import { sepolia } from 'viem/chains'
 import Sign from './Sign'
 import { chamberAbi } from '../abi/chamberAbi'
+import { Search2Icon } from '@chakra-ui/icons';
 
 type State = {
     amount: number;
@@ -81,7 +85,16 @@ function Token() {
                 <BreadcrumbLink isCurrentPage>Token</BreadcrumbLink>
             </BreadcrumbItem>
             </Breadcrumb>
-            
+            <FormControl>
+            <InputGroup size='md'>
+                <InputLeftElement  justifyContent={'start'}>
+                        <Button type={'submit'} borderRightRadius={0} rounded={'xl'} size='sm' variant={'transparent'}>
+                            <Search2Icon/>
+                        </Button>
+                </InputLeftElement>
+                <Input isDisabled placeholder="Search Transaction" variant={'filled'} overflow={'hidden'} rounded={'xl'}/>
+            </InputGroup>
+        </FormControl>
             </Grid>
             {/* {formatEther(result.data?.value?result.data.value:BigInt(0), "wei")}
             {result.data?.symbol.toString()} */}
