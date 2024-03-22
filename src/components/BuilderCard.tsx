@@ -2,9 +2,10 @@ import { CheckIcon, SearchIcon, WarningTwoIcon } from '@chakra-ui/icons'
 import { Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel } from '@chakra-ui/react'
 import { GrPowerReset } from "react-icons/gr";
 import { useQuery } from '@tanstack/react-query'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { isAddress } from 'viem'
 import { FaCode } from "react-icons/fa6";
+import { create } from 'zustand';
 
 interface AbiData{
   "status": string,
@@ -26,11 +27,37 @@ function isJSON(str:string) {
   }
 }
 
+interface BuilderState{
+  abiTextArea: string,
+  abi: AbiFragment[],
+  contractAddress: string,
+  setAbiTextArea: (abiTextArea: BuilderState['abiTextArea'])=>void,
+  setAbi: (abi: BuilderState['abi'])=>void,
+  setContractAddress: (contractAddress: BuilderState['contractAddress'])=>void,
+}
+export const useBuilderState = create<BuilderState>((set)=>({
+  abiTextArea:'',
+  abi: [],
+  contractAddress: '',
+  setAbiTextArea: (_abiTextArea)=>{
+    set(()=>({abiTextArea:_abiTextArea}));
+  },
+  setAbi: (_abi)=>{
+    set(()=>({abi:_abi}))
+  },
+  setContractAddress: (_contractAddress)=>{
+    set(()=>({contractAddress:_contractAddress}));
+  },
+}))
+
 function BuilderCard() {
   const bg = useColorModeValue("gray.100", "gray.700");
-  const [abiTextArea, setAbiTextArea] = useState('');
-  const [abi, setAbi] = useState<AbiFragment[]>();
-  const [contractAddress, setContractAddress] = useState('');
+  const abiTextArea = useBuilderState((state)=>state.abiTextArea);
+  const setAbiTextArea = useBuilderState((state)=>state.setAbiTextArea);
+  const abi = useBuilderState((state)=>state.abi);
+  const setAbi = useBuilderState((state)=>state.setAbi);
+  const contractAddress = useBuilderState((state)=>state.contractAddress);
+  const setContractAddress = useBuilderState((state)=>state.setContractAddress);
   const isAddressValid = isAddress(contractAddress);
   const { data:abiData, refetch, isError, isLoading } = useQuery<AbiData>({
     queryKey:['abiData', contractAddress],
