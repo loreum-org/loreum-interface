@@ -1,8 +1,8 @@
 import { CheckIcon, SearchIcon, WarningTwoIcon } from '@chakra-ui/icons'
-import { Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel } from '@chakra-ui/react'
+import { Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel, Button } from '@chakra-ui/react'
 import { GrPowerReset } from "react-icons/gr";
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { isAddress } from 'viem'
 import { FaCode } from "react-icons/fa6";
 import { create } from 'zustand';
@@ -13,10 +13,16 @@ interface AbiData{
   "result": string,
 }
 
+interface InputsFragment {
+  internalType: string,
+  name: string,
+  type: string,
+}
+
 interface AbiFragment {
-  type: string;
-  name: string;
-  inputs: { type: string }[];
+  type: string,
+  name: string,
+  inputs: InputsFragment[],
 }
 
 function isJSON(str:string) {
@@ -35,7 +41,7 @@ interface BuilderState{
   setAbi: (abi: BuilderState['abi'])=>void,
   setContractAddress: (contractAddress: BuilderState['contractAddress'])=>void,
 }
-export const useBuilderState = create<BuilderState>((set)=>({
+const useBuilderState = create<BuilderState>((set)=>({
   abiTextArea:'',
   abi: [],
   contractAddress: '',
@@ -59,6 +65,12 @@ function BuilderCard() {
   const contractAddress = useBuilderState((state)=>state.contractAddress);
   const setContractAddress = useBuilderState((state)=>state.setContractAddress);
   const isAddressValid = isAddress(contractAddress);
+  const [selectedFunction, setSelectedFucntion] = useState<AbiFragment | null>(null);
+  const handelFunctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedFunctionName = e.target.value;
+    const selectedFunctionObj = abi.find((f) => f.name === selectedFunctionName);
+    setSelectedFucntion(selectedFunctionObj || null);
+  }
   const { data:abiData, refetch, isError, isLoading } = useQuery<AbiData>({
     queryKey:['abiData', contractAddress],
     queryFn: async (): Promise<AbiData> => {
@@ -102,8 +114,8 @@ function BuilderCard() {
     }
   };
   return (
-    <Box p={5}>
-        <Flex justifyContent={'center'}>
+    <Box p={5} >
+        <Flex justifyContent={'center'} gap={4}>
           <Card w={['full','30rem']} rounded={'xl'} bg={bg}>
             <CardBody>
             <Stack spacing={'3'}>
@@ -113,8 +125,8 @@ function BuilderCard() {
             <Divider/>
             <CardBody >
               <FormLabel fontWeight={'bold'}>Address</FormLabel>
-              <InputGroup pb={5}>
-                <Input fontSize={'sm'} value={contractAddress} onChange={(e) => setContractAddress(e.currentTarget.value)} placeholder='Enter Address'></Input>
+              <InputGroup  pb={5}>
+                <Input fontSize={['xs','sm']} value={contractAddress} onChange={(e) => setContractAddress(e.currentTarget.value)} placeholder='Enter Address'></Input>
                 <InputRightElement>
                 {
                   isAddressValid?(
@@ -142,7 +154,7 @@ function BuilderCard() {
                 </Tooltip>
                 </Flex>
               </Flex>
-              <Textarea  colorScheme='red' overflowX={'hidden'} h={'12rem'} fontSize={'sm'} placeholder='Address ABI' value={abiTextArea} onChange={handleAbiChange} isInvalid={isJSON(abiTextArea) || abiTextArea.length == 0 ?false:true}>
+              <Textarea fontSize={['xs','sm']} colorScheme='red' overflowX={'hidden'} h={'12rem'} placeholder='Address ABI' value={abiTextArea} onChange={handleAbiChange} isInvalid={isJSON(abiTextArea) || abiTextArea.length == 0 ?false:true}>
               </Textarea>
               <Flex pt={3} justifyContent={'end'}>
               {isJSON(abiTextArea) || abiTextArea.length == 0 ?"":(<Flex gap={2} alignItems={'center'} pt={2} color={'red.500'} fontSize={'sm'}><WarningTwoIcon color={'red.500'}/> Invalid JSON</Flex>)}
@@ -153,16 +165,30 @@ function BuilderCard() {
               <Stack spacing={'3'} pb={'20px'}>
                 <Heading size={'md'}>Transaction Details</Heading>
               </Stack>
-              <Select placeholder='Select function' isDisabled={abi?.length?false:true}>
+              <Select placeholder='Select function' onChange={handelFunctionChange} isDisabled={abi?.length?false:true}>
                 {abi?.map((abiFuntion)=>(
                   <>
                   {abiFuntion.type ==="function"?
+                    (<>
                     <option value={abiFuntion.name}>{abiFuntion.name}</option>
+                    </>)
                     :(<></>)
                   }
                   </>
                 ))}
               </Select>
+              {selectedFunction && (
+              <Flex  gap={2} flexFlow={'column'} pt={2}>
+                {selectedFunction.inputs.map((input, index) => (
+                  <div key={index}>
+                    <Input type="text" placeholder={input.name + " (" + input.type + ")"} />
+                  </div>
+                ))}
+                <Flex justifyContent={'end'} pt={1}>
+                  <Button colorScheme='blue' w={'30%'}>Create</Button>
+                </Flex>
+              </Flex>
+            )}
             </CardBody>
           </Card>
         </Flex>
