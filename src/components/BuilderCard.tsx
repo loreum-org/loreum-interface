@@ -6,6 +6,11 @@ import { useEffect, useState } from 'react'
 import { isAddress } from 'viem'
 import { FaCode } from "react-icons/fa6";
 import { create } from 'zustand';
+import {
+  FormControl,
+  FormErrorMessage
+} from '@chakra-ui/react'
+import { Form } from 'react-router-dom';
 
 interface AbiData{
   "status": string,
@@ -165,7 +170,7 @@ function BuilderCard() {
               <Stack spacing={'3'} pb={'20px'}>
                 <Heading size={'md'}>Transaction Details</Heading>
               </Stack>
-              <Select placeholder='Select function' onChange={handelFunctionChange} isDisabled={abi?.length?false:true}>
+              <Select mb={'20px'} placeholder='Select function' onChange={handelFunctionChange} isDisabled={abi?.length?false:true}>
                 {abi?.map((abiFuntion)=>(
                   <>
                   {abiFuntion.type ==="function"?
@@ -178,16 +183,22 @@ function BuilderCard() {
                 ))}
               </Select>
               {selectedFunction && (
-              <Flex  gap={2} flexFlow={'column'} pt={2}>
-                {selectedFunction.inputs.map((input, index) => (
-                  <div key={index}>
-                    <Input type="text" placeholder={input.name + " (" + input.type + ")"} />
-                  </div>
-                ))}
-                <Flex justifyContent={'end'} pt={1}>
-                  <Button colorScheme='blue' w={'30%'}>Create</Button>
-                </Flex>
-              </Flex>
+              <Form>
+                <FormControl isRequired >
+                  <Flex flexFlow={'column'} gap={3}>
+                    {selectedFunction.inputs.map((input, index) => (
+                      <Flex flexFlow={'column'}>
+                        <FormLabel>{input.name}</FormLabel>
+                        <Input key={index} type="text" placeholder={input.type } />
+                        <FormErrorMessage></FormErrorMessage>
+                      </Flex>
+                    ))}
+                  </Flex>
+                  <Flex justifyContent={'end'} pt={4}>
+                    <Button type={'submit'} colorScheme='blue' w={'30%'}>Create</Button>
+                  </Flex>
+                </FormControl>
+              </Form>
             )}
             </CardBody>
           </Card>
