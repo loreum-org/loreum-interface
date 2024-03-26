@@ -1,5 +1,5 @@
-import { CheckIcon, SearchIcon, WarningTwoIcon } from '@chakra-ui/icons'
-import { Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel, Button } from '@chakra-ui/react'
+import { CheckIcon, DeleteIcon, DownloadIcon, EditIcon, SearchIcon, WarningTwoIcon } from '@chakra-ui/icons'
+import { useDisclosure, Text, Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel, Button, HStack, CardFooter } from '@chakra-ui/react'
 import { GrPowerReset } from "react-icons/gr";
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -8,9 +8,50 @@ import { FaCode } from "react-icons/fa6";
 import { create } from 'zustand';
 import {
   FormControl,
-  FormErrorMessage
+} from '@chakra-ui/react'
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from '@chakra-ui/react'
 import { Form } from 'react-router-dom';
+
+interface TransactionBatch {
+  version: string;
+  chainId: string;
+  createdAt: number;
+  meta: {
+    name: string;
+    description: string;
+    txBuilderVersion: string;
+    createdFromContractAddress: string;
+    checksum: string;
+  };
+  transactions: Transaction[];
+}
+
+interface Transaction {
+  to: string;
+  value: string;
+  data: null | string;
+  contractMethod: ContractMethod;
+  contractInputsValues: ContractInputsValues;
+}
+
+interface ContractMethod {
+  inputs: InputsFragment[];
+  name: string;
+  payable: boolean;
+}
+
+interface ContractInputsValues {
+  [key: string]: string;
+}
+
 
 interface AbiData{
   "status": string,
@@ -28,6 +69,7 @@ interface AbiFragment {
   type: string,
   name: string,
   inputs: InputsFragment[],
+  outputs: InputsFragment[],
 }
 
 function isJSON(str:string) {
@@ -42,14 +84,30 @@ interface BuilderState{
   abiTextArea: string,
   abi: AbiFragment[],
   contractAddress: string,
+  transactionBatch: TransactionBatch,
   setAbiTextArea: (abiTextArea: BuilderState['abiTextArea'])=>void,
   setAbi: (abi: BuilderState['abi'])=>void,
   setContractAddress: (contractAddress: BuilderState['contractAddress'])=>void,
+  setTransactionBatch: (transactionBatch: BuilderState['transactionBatch'])=>void
+  pushTransaction: (transaction: TransactionBatch['transactions'][0])=>void
 }
 const useBuilderState = create<BuilderState>((set)=>({
   abiTextArea:'',
   abi: [],
   contractAddress: '',
+  transactionBatch: {
+    version: '1',
+    chainId: '1',
+    createdAt: 0,
+    meta: {
+      name: '',
+      description: '',
+      txBuilderVersion: '',
+      createdFromContractAddress: '',
+      checksum: '',
+    },
+    transactions: [],
+  },
   setAbiTextArea: (_abiTextArea)=>{
     set(()=>({abiTextArea:_abiTextArea}));
   },
@@ -59,7 +117,32 @@ const useBuilderState = create<BuilderState>((set)=>({
   setContractAddress: (_contractAddress)=>{
     set(()=>({contractAddress:_contractAddress}));
   },
+  setTransactionBatch: (_transactionBatch)=>{
+    set(()=>({transactionBatch:_transactionBatch}));
+  },
+  pushTransaction: (_transaction)=>{
+    set((state)=>({transactionBatch:{...state.transactionBatch, transactions:[...state.transactionBatch.transactions, _transaction]}}))
+  }
 }))
+
+function isValidABI(jsonABI: string): boolean {
+  try {
+    const abi: AbiFragment[] = JSON.parse(jsonABI);
+    if (!Array.isArray(abi)) {
+      return false;
+    }
+    for (const entry of abi) {
+      if (!entry.type && !entry.name && !entry.outputs && !Array.isArray(entry.inputs)) {
+        console.log('Invalid ABI entry type:', entry.type);
+        console.log('Invalid ABI entry inputs:', entry.inputs);
+        return false;
+      }
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 function BuilderCard() {
   const bg = useColorModeValue("gray.100", "gray.700");
@@ -71,6 +154,7 @@ function BuilderCard() {
   const setContractAddress = useBuilderState((state)=>state.setContractAddress);
   const isAddressValid = isAddress(contractAddress);
   const [selectedFunction, setSelectedFucntion] = useState<AbiFragment | null>(null);
+  const [to, setTo] = useState('');
   const handelFunctionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedFunctionName = e.target.value;
     const selectedFunctionObj = abi.find((f) => f.name === selectedFunctionName);
@@ -82,11 +166,6 @@ function BuilderCard() {
       const response = await fetch(
         `https://api-sepolia.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${import.meta.env.VITE_ETHERSCAN_API_KEY}`
       );
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
       return response.json();
     },
     enabled: isAddressValid,
@@ -96,6 +175,7 @@ function BuilderCard() {
   useEffect(() => {
     if (isAddressValid) {
       refetch();
+      setTo(contractAddress)
     }
     if (abiData && abiData?.result) {
       setAbiTextArea(abiData.result.toString())
@@ -114,13 +194,42 @@ function BuilderCard() {
     const value = e.target.value;
     setAbiTextArea(value);
 
-    if (isJSON(value)) {
+    if (isJSON(value) && isValidABI(value)){
       setAbi(JSON.parse(value));
     }
   };
+
+  const transactionBatch = useBuilderState((state)=>state.transactionBatch);
+  const pushTransaction = useBuilderState((state)=>state.pushTransaction);
+  
+  const handleTransactionSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const transaction: Transaction = {
+      to,
+      value: '0',
+      data: null,
+      contractMethod: {
+        inputs: selectedFunction?.inputs || [],
+        name: selectedFunction?.name || '',
+        payable: false,
+      },
+      contractInputsValues: {} as Record<string, string>, // Initialize contractInputsValues as an empty object
+    };
+    if (selectedFunction && selectedFunction.inputs) {
+      selectedFunction.inputs.forEach((input, index) => {
+        const inputValue = (event.currentTarget as HTMLFormElement)[`input-${index}`]?.value || '';
+        transaction.contractInputsValues[input.name] = inputValue;
+      });
+    }
+    pushTransaction(transaction);
+  }
+
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
   return (
+    <>
     <Box p={5} >
-        <Flex justifyContent={'center'} gap={4}>
+        <Flex justifyContent={'center'} gap={4} flexWrap={'wrap'}>
           <Card w={['full','30rem']} rounded={'xl'} bg={bg}>
             <CardBody>
             <Stack spacing={'3'}>
@@ -166,44 +275,95 @@ function BuilderCard() {
               </Flex>
             </CardBody>
             <Divider/>
+              <CardBody>
+                <Stack spacing={'3'} pb={'20px'}>
+                  <Heading size={'md'}>Transaction Details</Heading>
+                </Stack>
+                <Select mb={'20px'} key={abi?.length} placeholder='Select function' onChange={handelFunctionChange} isDisabled={abi?.length?false:true}>
+                 {abi?.filter((abiFuntion) => abiFuntion.type === "function").map((abiFuntion, index)=>(
+                    <option key={`${abiFuntion.name}-${index}`} value={abiFuntion.name}>{abiFuntion.name}</option>
+                  ))}
+                </Select>
+                {selectedFunction && (
+                  <Form onSubmit={handleTransactionSubmit}>
+                  <FormControl isRequired >
+                    <FormLabel>To</FormLabel>
+                    <Input mb={'20px'} placeholder='To' value={to} onChange={(e)=>setTo(e.target.value)}></Input>
+                    <Flex flexFlow={'column'} gap={3}>
+                      {selectedFunction.inputs.map((input, index) => (
+                        <Flex key={index}flexFlow={'column'}>
+                          <FormLabel>{input.name}</FormLabel>
+                          <Input type="text" id={`input-${index}`} name={`input-${index}`} placeholder={input.type } />
+                        </Flex>
+                      ))}
+                    </Flex>
+                    <Flex justifyContent={'end'} pt={4}>
+                      <Button type={'submit'} colorScheme='blue' w={'30%'}>Create</Button>
+                    </Flex>
+                  </FormControl>
+                  </Form>
+              )}
+              </CardBody>
+          </Card>
+          <Card w={['full','30rem']} h={'min-content'} rounded={'xl'} bg={bg}>
             <CardBody>
-              <Stack spacing={'3'} pb={'20px'}>
-                <Heading size={'md'}>Transaction Details</Heading>
-              </Stack>
-              <Select mb={'20px'} placeholder='Select function' onChange={handelFunctionChange} isDisabled={abi?.length?false:true}>
-                {abi?.map((abiFuntion)=>(
+              <HStack spacing={'3'} justifyContent={'space-between'}>
+                <Heading size={'md'}>Transactions Batch</Heading>
+                <HStack>
+                  <Tooltip label={'Download'}>
+                    <IconButton icon={<DownloadIcon/>} aria-label='Download' variant={'transparent'}   h={'inherit'}/>
+                  </Tooltip>
+                  <Tooltip label={'Delete'}>
+                    <IconButton icon={<DeleteIcon/>} aria-label='Delete' variant={'transparent'} h={'inherit'}/>
+                  </Tooltip>
+                </HStack>
+              </HStack>
+            </CardBody>
+            <Divider/>
+            <CardBody>
+              <Flex flexDirection={'column'} gap={3}>
+                {transactionBatch.transactions.map((transaction, index)=>(
                   <>
-                  {abiFuntion.type ==="function"?
-                    (<>
-                    <option value={abiFuntion.name}>{abiFuntion.name}</option>
-                    </>)
-                    :(<></>)
-                  }
+                  <Flex key={index} justifyContent={'space-between'} w={'full'} >
+                    <Text>
+                    {transaction.to.slice(0,6)+"..."+transaction.to.slice(38)}
+                    </Text>
+                    <Text>
+                    {transaction.contractMethod.name}
+                    </Text>
+                    <Box>
+                    <IconButton aria-label='Edit' icon={<EditIcon/>} variant={'transparent'}  h={'inherit'}/>
+                    <IconButton aria-label='Delete' icon={<DeleteIcon/>} variant={'transparent'}  h={'inherit'}/>
+                    </Box>
+                  </Flex>
+                  <Divider/>
                   </>
                 ))}
-              </Select>
-              {selectedFunction && (
-              <Form>
-                <FormControl isRequired >
-                  <Flex flexFlow={'column'} gap={3}>
-                    {selectedFunction.inputs.map((input, index) => (
-                      <Flex flexFlow={'column'}>
-                        <FormLabel>{input.name}</FormLabel>
-                        <Input key={index} type="text" placeholder={input.type } />
-                        <FormErrorMessage></FormErrorMessage>
-                      </Flex>
-                    ))}
-                  </Flex>
-                  <Flex justifyContent={'end'} pt={4}>
-                    <Button type={'submit'} colorScheme='blue' w={'30%'}>Create</Button>
-                  </Flex>
-                </FormControl>
-              </Form>
-            )}
+              </Flex>
             </CardBody>
+            <CardFooter justifyContent={'end'}>
+              <Button colorScheme='blue' isDisabled={transactionBatch.transactions.length>0?false:true} onClick={onOpen}>Create Batch</Button>
+              <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Modal Title</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                    {(JSON.stringify(transactionBatch.transactions,null,4))}
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button colorScheme='blue' mr={3} onClick={onClose}>
+                      Close
+                    </Button>
+                    <Button variant='ghost'>Secondary Action</Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+            </CardFooter>
           </Card>
         </Flex>
     </Box>
+   </>
   )
 }
 
