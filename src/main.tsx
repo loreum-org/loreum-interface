@@ -11,9 +11,8 @@ import theme from "./theme";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import "@fontsource/cairo/200.css";
 import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { WagmiProvider, http } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { WagmiProvider} from "wagmi";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import Chamber from "./pages/Chamber";
 import Proposal from "./pages/Proposal";
@@ -27,6 +26,7 @@ import Send from "./pages/Send";
 import Builder from "./pages/Builder";
 import Token from "./pages/Token";
 import NFT from "./pages/NFT";
+import { config } from "./config";
 
 const router = createBrowserRouter([
   {
@@ -87,17 +87,6 @@ const router = createBrowserRouter([
 ]);
 
 const queryClient = new QueryClient();
-
-const config = getDefaultConfig({
-  appName: "Loreum",
-  projectId: "YOUR_PROJECT_ID",
-  chains: [mainnet, sepolia],
-  transports: {
-    [mainnet.id]: http(),
-    // [sepolia.id]: http(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`),
-    [sepolia.id]: http(),
-  },
-});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
