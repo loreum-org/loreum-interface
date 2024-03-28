@@ -51,8 +51,17 @@ const Leaderboard = () => {
   const [pdelegation, setPDelegation] = useState(0)
   const [dnftID, setDNftID] = useState(0)
   const [ddelegation, setDDelegation] = useState(0)
+  const [BOA,setBOA] = useState('')
   const {writeContract} = useWriteContract()
   const [isLoading1, setisLoading1] = useState(false)
+
+  const Balance = useReadContract({
+    abi: erc20Abi,
+    address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
+    functionName:'balanceOf',
+    args: [`0x${BOA?.slice(2)}`],
+    chainId: sepolia.id,
+  })
 
   const Sign = async() => {
     try {
@@ -208,6 +217,16 @@ const Leaderboard = () => {
                   </Flex>
                 </FormControl>
               </Form>
+            </CardBody>
+            <Divider/>
+            <CardBody>
+              <Stack pb={5}>
+                <Heading size={'md'}>BalanceOf</Heading>
+              </Stack>
+              <HStack pb={5}>
+              <Input type="text" onChange={(e)=>setBOA(e.target.value)} placeholder="Enter Address"></Input>
+              </HStack>
+              Balance: {Balance.data?.toString()} {govTokenSymbol.data?.toString()}
             </CardBody>
           </Card>
         </Flex>
