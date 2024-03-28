@@ -1,4 +1,4 @@
-import { Box, Flex, Card , useColorModeValue, CardBody, Stack, Heading, Divider, Center, Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, IconButton, HStack} from "@chakra-ui/react"
+import { Box, Flex, Card , useColorModeValue, CardBody, Stack,Text, Heading, Divider, Center, Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, IconButton, HStack} from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query";
 import { useAccount, useReadContract } from "wagmi";
 import { chamberAbi } from "../abi/chamberAbi";
@@ -7,7 +7,7 @@ import { sepolia } from "viem/chains";
 import LeaderRow from "../components/LeaderRow";
 import { Search2Icon, WarningTwoIcon } from "@chakra-ui/icons";
 import Error from "./Error";
-import { erc20Abi, getAddress } from "viem";
+import { erc20Abi } from "viem";
 import { chambersState } from "../hooks/store";
 import request from "graphql-request";
 import { getChamberByAddressQuery } from "../gql/graphql";
@@ -53,16 +53,16 @@ const Leaderboard = () => {
   const [ddelegation, setDDelegation] = useState(0)
   const {writeContract} = useWriteContract()
   const [isLoading1, setisLoading1] = useState(false)
-
   const account = useAccount()
-  const accountAddress = getAddress(account.address? account.address.toString():'')
-  const Balance = useReadContract({
-    abi: erc20Abi,
-    address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
-    functionName:'balanceOf',
-    args: [accountAddress],
-    chainId: sepolia.id,
-  })
+  const Balance = account.address
+  ? useReadContract({
+      abi: erc20Abi,
+      address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
+      functionName: 'balanceOf',
+      args: [account.address],
+      chainId: sepolia.id,
+    })
+  :undefined;
 
   const Sign = async() => {
     try {
@@ -221,10 +221,13 @@ const Leaderboard = () => {
             </CardBody>
             <Divider/>
             <CardBody>
-              <Stack pb={5}>
-                <Heading size={'md'}>Balance</Heading>
-              </Stack>
-              Balance: {Balance.data?.toString() || 0} {govTokenSymbol.data?.toString()}
+              <HStack>
+                <Heading size={'md'}>Balance:</Heading>
+                <Text >
+                {Balance?Balance.data?.toString() + " ":'0 '} 
+                {govTokenSymbol.data?.toString()}
+                </Text>
+              </HStack>
             </CardBody>
           </Card>
         </Flex>
