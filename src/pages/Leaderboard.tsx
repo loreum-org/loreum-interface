@@ -1,13 +1,13 @@
 import { Box, Flex, Card , useColorModeValue, CardBody, Stack, Heading, Divider, Center, Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, IconButton, HStack} from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query";
-import { useReadContract } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { chamberAbi } from "../abi/chamberAbi";
 import { Form, Link, useParams } from "react-router-dom";
 import { sepolia } from "viem/chains";
 import LeaderRow from "../components/LeaderRow";
 import { Search2Icon, WarningTwoIcon } from "@chakra-ui/icons";
 import Error from "./Error";
-import { erc20Abi } from "viem";
+import { erc20Abi, getAddress } from "viem";
 import { chambersState } from "../hooks/store";
 import request from "graphql-request";
 import { getChamberByAddressQuery } from "../gql/graphql";
@@ -51,15 +51,16 @@ const Leaderboard = () => {
   const [pdelegation, setPDelegation] = useState(0)
   const [dnftID, setDNftID] = useState(0)
   const [ddelegation, setDDelegation] = useState(0)
-  const [BOA,setBOA] = useState('')
   const {writeContract} = useWriteContract()
   const [isLoading1, setisLoading1] = useState(false)
 
+  const account = useAccount()
+  const accountAddress = getAddress(account.address? account.address.toString():'')
   const Balance = useReadContract({
     abi: erc20Abi,
     address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
     functionName:'balanceOf',
-    args: [`0x${BOA?.slice(2)}`],
+    args: [accountAddress],
     chainId: sepolia.id,
   })
 
@@ -221,12 +222,9 @@ const Leaderboard = () => {
             <Divider/>
             <CardBody>
               <Stack pb={5}>
-                <Heading size={'md'}>BalanceOf</Heading>
+                <Heading size={'md'}>Balance</Heading>
               </Stack>
-              <HStack pb={5}>
-              <Input type="text" onChange={(e)=>setBOA(e.target.value)} placeholder="Enter Address"></Input>
-              </HStack>
-              Balance: {Balance.data?.toString()} {govTokenSymbol.data?.toString()}
+              Balance: {Balance.data?.toString() || 0} {govTokenSymbol.data?.toString()}
             </CardBody>
           </Card>
         </Flex>
