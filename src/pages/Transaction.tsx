@@ -1,4 +1,4 @@
-import { Search2Icon } from '@chakra-ui/icons';
+import { CheckCircleIcon, QuestionIcon, Search2Icon } from '@chakra-ui/icons';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,8 +16,20 @@ import {
   useDisclosure,
   Text,
   Skeleton,
-  Center
+  Center,
+  Tooltip,
+  Card,
+  CardBody,
+  Box,
+  Stack,
+  Heading,
+  FormLabel,
+  InputRightElement,
+  IconButton,
+  Alert,
+  AlertIcon
 } from '@chakra-ui/react';
+import { ByteArray } from 'viem'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import {
   Modal,
@@ -28,7 +40,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from '@chakra-ui/react'
-
+import { useSimulateContract} from 'wagmi'
 import {
   Accordion,
   AccordionItem,
@@ -45,7 +57,9 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import request from 'graphql-request';
 import { getProposals } from '../gql/graphql';
-import { useAccount } from 'wagmi';
+import { UseReadContractReturnType, useAccount, useReadContract, useSignMessage, useWriteContract } from 'wagmi';
+import { sepolia } from 'viem/chains';
+import { chamberAbi } from '../abi/chamberAbi';
 
 type State = {
     query: string
@@ -76,13 +90,53 @@ interface proposalCreateds{
   proposalCreateds: proposalCreated[]
 }
 
-const Transaction = () => {
+function Transaction(){
+  const [nftId, setNftId] = useState<string>('');
+  const [proposalId, setProposalId] = useState<string>('');
+  const [nftId1, setNftId1] = useState<string>('');
+  const [proposalId1, setProposalId1] = useState<string>('');
+
   const {address} = useParams<AddressParams>();
   const {chainId} = useAccount();
-  const query = useQueryStore((state)=> state.query)
-  const setQuery = useQueryStore((state)=> state.setQuery)
+  const query = useQueryStore((state)=> state.query);
+  const setQuery = useQueryStore((state)=> state.setQuery);
 
+  const { data: signMessageData, isPending , signMessage } = useSignMessage()
+  const signExecute = useSignMessage();
 
+  const constructMessageHash: UseReadContractReturnType = useReadContract({
+    abi: chamberAbi,
+    address: `0x${address?.slice(2)}`,
+    functionName: 'constructMessageHash',
+    chainId: sepolia.id,
+    args: [BigInt(proposalId1), BigInt(nftId1)],
+  });
+
+  const constructMessageHash1: UseReadContractReturnType = useReadContract({
+    abi: chamberAbi,
+    address: `0x${address?.slice(2)}`,
+    functionName: 'constructMessageHash',
+    chainId: sepolia.id,
+    args: [BigInt(proposalId), BigInt(nftId)],
+  });
+
+  const {data, isLoading, isError} = useSimulateContract({
+    address: `0x${address?.slice(2)}`,
+    abi: chamberAbi,
+    functionName: 'approve',
+    args: [BigInt(proposalId1), BigInt(nftId1), signMessageData?(signMessageData):'0x'],
+    chainId: sepolia.id,
+  })
+
+  const executeSimulate = useSimulateContract({
+    address: `0x${address?.slice(2)}`,
+    abi: chamberAbi,
+    functionName: 'execute',
+    args: [BigInt(proposalId), BigInt(nftId), signExecute.data?(signExecute.data):'0x'],
+    chainId: sepolia.id,
+  })
+
+  const {writeContract} = useWriteContract()
   const Proposals = useQuery<proposalCreateds>({
     queryKey: ['proposalCreateds'],
     queryFn: async () => request(
@@ -91,7 +145,6 @@ const Transaction = () => {
       {chamberAddress: address}
     ),
   })
-
 
   const OverlayOne = () => (
     <ModalOverlay
@@ -154,11 +207,13 @@ const Transaction = () => {
             Receive
           </Button>
           <Flex border={'1px'} p={'3px'} rounded={'xl'} borderColor={'gray.500'}>
-            <Tab rounded={'lg'} fontSize={['xs','sm']} h={'2rem'} >Queue</Tab>
-            <Tab rounded={'lg'} fontSize={['xs','sm']} h={'2rem'} >History</Tab>
+            <Tab rounded={'lg'} fontSize={['xs','sm']} h={'2rem'} >Transactions</Tab>
+            <Tab rounded={'lg'} fontSize={['xs','sm']} h={'2rem'} >Functions</Tab>
           </Flex>
         </TabList>
-        <Hide below='sm'>
+        <TabPanels>
+          <TabPanel >
+          <Hide below='sm'>
         <Grid templateColumns={'repeat(8, 1fr)'} justifyItems={'center'} pb={'0.5rem'} fontSize={'xs'} color={'gray.500'} fontWeight={'semibold'}>
           <GridItem>Transaction</GridItem>
           <GridItem>Txn Hash</GridItem>
@@ -170,8 +225,6 @@ const Transaction = () => {
           <GridItem>Status</GridItem>
         </Grid>
         </Hide>
-        <TabPanels>
-          <TabPanel >
               {Proposals.isLoading || Proposals.isRefetching?(
                 <Flex flexFlow={'column'} rowGap={3}>
                 <Skeleton rounded={'lg'} height='40px'/>
@@ -209,7 +262,11 @@ const Transaction = () => {
                           <GridItem>{proposal.proposalId}</GridItem>
                           <GridItem>{chainId===1?"Ethereum":"Sepolia"}</GridItem>
                           <GridItem>{new Date(parseInt(proposal.blockTimestamp) * 1000).toLocaleDateString()}</GridItem>
-                          <GridItem justifySelf={'end'}>Unknown</GridItem>
+                          <GridItem justifySelf={'end'}>
+                            <Tooltip label="Unknown">
+                            <QuestionIcon/>
+                            </Tooltip>
+                          </GridItem>
                         </Grid>
                         <AccordionIcon/>
                       </AccordionButton>
@@ -229,7 +286,13 @@ const Transaction = () => {
                             <Grid templateColumns={'repeat(3, 1fr)'} justifyItems={'center'}>
                               <GridItem>{proposal.target[index]}</GridItem>
                               <GridItem>{proposal.value[index]}</GridItem>
-                              <GridItem>{proposal.data[index].slice(0,10)}...</GridItem>
+                              <GridItem>
+                                <Box width={'25rem'}>
+                                  <Text>
+                                {proposal.data[index]}
+                                  </Text>
+                                </Box>
+                              </GridItem>
                             </Grid>
                             </GridItem>
                           ))}
@@ -241,11 +304,6 @@ const Transaction = () => {
                           <Text key={index}>{voter}</Text>
                           ))}
                           </Flex>
-                        <Divider/>
-                        <Flex justifyContent={'end'} gap={3} pt={3}>
-                          <Button colorScheme='blue' variant={'outline'}>Approve</Button>
-                          <Button colorScheme='blue'>Execute</Button>
-                        </Flex>
                       </AccordionPanel>
                     </AccordionItem>
                   </Accordion>
@@ -255,13 +313,140 @@ const Transaction = () => {
               )}
           </TabPanel>
           <TabPanel>
-            <Flex flexFlow={'column'} rowGap={3}>
-              <Button w={'full'} rounded={'lg'}></Button>
-              <Button w={'full'} rounded={'lg'}></Button>
-              <Button w={'full'} rounded={'lg'}></Button>
-              <Button w={'full'} rounded={'lg'}></Button>
-              <Button w={'full'} rounded={'lg'}></Button>
-            </Flex>
+          <Flex justifyContent={'center'} gap={4} flexWrap={'wrap'}>
+            <Card w={['full','30rem']} rounded={'xl'}  h={'min-content'}>
+              <CardBody>
+                <Stack>
+                  <Heading size={'md'}>Approve</Heading>
+                </Stack>
+              </CardBody>
+              <Divider/>
+              <CardBody>
+                <Flex flexFlow={'column'} gap={4}>
+                <Flex justifyContent={'end'} flexFlow={'row'} gap={5} >
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>NFT ID</FormLabel>
+                    <Input w={'auto'} value={nftId1} onChange={(e)=>{setNftId1(e.target.value)}}   placeholder='Enter Your NFT ID'></Input>
+                  </Flex>
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>Proposal ID</FormLabel>
+                    <Input w={'auto'} value={proposalId1} onChange={(e)=>{setProposalId1(e.target.value)}} placeholder='Enter Proposal ID'></Input>
+                  </Flex>
+                </Flex>
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>Message Hash</FormLabel>
+                    <InputGroup>
+                    <Input w={'full'} isDisabled value={constructMessageHash.data as string}></Input>
+                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={constructMessageHash.isLoading} icon={<CheckCircleIcon/>}/></InputRightElement>
+                    </InputGroup>
+                  </Flex>
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>Signature</FormLabel>
+                    <InputGroup>
+                    <Input value={signMessageData} isDisabled placeholder='Enter signature'></Input>
+                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={isPending} icon={<CheckCircleIcon/>}/></InputRightElement>
+                    </InputGroup>
+                  </Flex>
+                <Flex pt={3} justifyContent={'end'} gap={3}>
+                  <Button isLoading={isPending} onClick={()=>{
+                    signMessage({message: {raw: constructMessageHash.data as ByteArray}})
+                  }}>Sign</Button>
+                  <Button isDisabled={!Boolean(data?.request)} onClick={()=> writeContract(data!.request)}>Approve</Button>
+                </Flex>
+                </Flex>
+                <Flex pt={3}>
+                  {isError?(
+                    <Alert status='error' rounded={'lg'}>
+                      <AlertIcon/>
+                      Can't approve this proposal.
+                    </Alert>
+                  ):(
+                    <>
+                    {
+                      isLoading?(
+                        <Alert status='info' rounded={'lg'}>
+                          <AlertIcon/>
+                          Checking...
+                        </Alert>
+                      ):(
+                        <Alert status='success' rounded={'lg'}>
+                          <AlertIcon/>
+                          can approved this proposal.
+                        </Alert>
+                      )
+                    }
+                    </>
+                  )}
+                </Flex>
+              </CardBody>
+            </Card>
+            <Card w={['full','30rem']} rounded={'xl'}  h={'min-content'}>
+              <CardBody>
+                <Stack>
+                  <Heading size={'md'}>Execute</Heading>
+                </Stack>
+              </CardBody>
+              <Divider/>
+              <CardBody>
+              <Flex flexFlow={'column'} gap={4}>
+                <Flex justifyContent={'end'} flexFlow={'row'} gap={5} >
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>NFT ID</FormLabel>
+                    <Input w={'auto'} value={nftId} onChange={(e)=>{setNftId(e.target.value)}}   placeholder='Enter Your NFT ID'></Input>
+                  </Flex>
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>Proposal ID</FormLabel>
+                    <Input w={'auto'} value={proposalId} onChange={(e)=>{setProposalId(e.target.value)}} placeholder='Enter Proposal ID'></Input>
+                  </Flex>
+                </Flex>
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>Message Hash</FormLabel>
+                    <InputGroup>
+                    <Input w={'full'} isDisabled value={constructMessageHash1.data as string}></Input>
+                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={constructMessageHash1.isLoading} icon={<CheckCircleIcon/>}/></InputRightElement>
+                    </InputGroup>
+                  </Flex>
+                  <Flex flexFlow={'column'}>
+                    <FormLabel>Signature</FormLabel>
+                    <InputGroup>
+                    <Input value={signExecute.data} isDisabled placeholder='Enter signature'></Input>
+                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={signExecute.isPending} icon={<CheckCircleIcon/>}/></InputRightElement>
+                    </InputGroup>
+                  </Flex>
+                <Flex pt={3} justifyContent={'end'} gap={3}>
+                  <Button isLoading={signExecute.isPending} onClick={()=>{
+                    signExecute.signMessage({message: {raw: constructMessageHash1.data as ByteArray}})
+                  }}>Sign</Button>
+                  <Button isDisabled={!Boolean(executeSimulate.data?.request)} onClick={()=> writeContract(executeSimulate.data!.request)}>Approve</Button>
+                </Flex>
+                </Flex>
+                <Flex pt={3}>
+                  {executeSimulate.isError?(
+                    <Alert status='error' rounded={'lg'}>
+                      <AlertIcon/>
+                      Can't execute this proposal.
+                    </Alert>
+                  ):(
+                    <>
+                    {
+                      executeSimulate.isLoading?(
+                        <Alert status='info' rounded={'lg'}>
+                          <AlertIcon/>
+                          Checking...
+                        </Alert>
+                      ):(
+                        <Alert status='success' rounded={'lg'}>
+                          <AlertIcon/>
+                          can execute this proposal.
+                        </Alert>
+                      )
+                    }
+                    </>
+                  )}
+                </Flex>
+              </CardBody>
+            </Card>
+          </Flex>
           </TabPanel>
         </TabPanels>
       </Tabs>
