@@ -60,6 +60,7 @@ import { getProposals } from '../gql/graphql';
 import { UseReadContractReturnType, useAccount, useReadContract, useSignMessage, useWriteContract } from 'wagmi';
 import { sepolia } from 'viem/chains';
 import { chamberAbi } from '../abi/chamberAbi';
+import Identicon from '../components/identicon';
 
 type State = {
     query: string
@@ -176,7 +177,6 @@ function Transaction(){
             {address ? address.slice(0,4): ''}...{address ? address.slice(38,42) : ''}
             </BreadcrumbLink>
           </BreadcrumbItem>
-
           <BreadcrumbItem isCurrentPage>
             <BreadcrumbLink as={Link} to={`/chamber/${address}/transaction`}>Transaction</BreadcrumbLink>
           </BreadcrumbItem>
@@ -284,7 +284,14 @@ function Transaction(){
                           {proposal.target.map((_, index)=>(
                             <GridItem key={index} py={1}>
                             <Grid templateColumns={'repeat(3, 1fr)'} justifyItems={'center'}>
-                              <GridItem>{proposal.target[index]}</GridItem>
+                              <GridItem>
+                                <Flex gap={3} alignItems={'center'}>
+                                <Identicon address={proposal.target[index].toString()} isize={20}/>
+                                <Text>
+                                {proposal.target[index]}
+                                </Text>
+                                </Flex>
+                              </GridItem>
                               <GridItem>{proposal.value[index]}</GridItem>
                               <GridItem>
                                 <Box width={'25rem'}>
@@ -417,7 +424,7 @@ function Transaction(){
                   <Button isLoading={signExecute.isPending} onClick={()=>{
                     signExecute.signMessage({message: {raw: constructMessageHash1.data as ByteArray}})
                   }}>Sign</Button>
-                  <Button isDisabled={!Boolean(executeSimulate.data?.request)} onClick={()=> writeContract(executeSimulate.data!.request)}>Approve</Button>
+                  <Button isDisabled={!Boolean(executeSimulate.data?.request)} onClick={()=> writeContract(executeSimulate.data!.request)}>Execute</Button>
                 </Flex>
                 </Flex>
                 <Flex pt={3}>
