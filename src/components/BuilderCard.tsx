@@ -1,5 +1,5 @@
 import { CheckIcon, DeleteIcon, DownloadIcon, SearchIcon, WarningTwoIcon } from '@chakra-ui/icons'
-import { useDisclosure, Text, Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel, Button, HStack, CardFooter, Grid, GridItem, useToast } from '@chakra-ui/react'
+import { useDisclosure, Text, Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel, Button, HStack, CardFooter, Grid, GridItem, useToast, Alert, AlertIcon, AlertTitle, AlertDescription } from '@chakra-ui/react'
 import { GrPowerReset } from "react-icons/gr";
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -301,6 +301,7 @@ function BuilderCard() {
       setTnxHash(result.toString());
       setSelectedFucntion(null);
     } catch (error) {
+      console.error(error);
       toast({
         title: 'Error',
         description:("Faild to send transaction.") ,
@@ -462,6 +463,26 @@ function BuilderCard() {
               </Accordion>
             <CardFooter justifyContent={'end'}>
               <Button colorScheme='blue' isDisabled={transactionBatch.transactions.length>0?false:true} onClick={onOpen}>Create Batch</Button>
+            </CardFooter>
+            <Divider/>
+            <CardBody>
+              <Flex flexFlow={'column'} gap={3}>
+              <Alert status='warning' rounded={'lg'}>
+                <AlertIcon />
+                <AlertTitle fontSize={'sm'}>Notice</AlertTitle>
+                <AlertDescription fontSize={'xs'}>
+                  Make sure there are atleast 5 leaders.
+                </AlertDescription>
+              </Alert>
+              <Alert status='info' rounded={'lg'}>
+                <AlertIcon />
+                <AlertTitle fontSize={'sm'}>Notice</AlertTitle>
+                <AlertDescription fontSize={'xs'}>
+                  Make sure you have altleast one MemberShip Token.
+                </AlertDescription>
+              </Alert>
+              </Flex>
+            </CardBody>
               <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
@@ -483,7 +504,6 @@ function BuilderCard() {
                   </ModalFooter>
                 </ModalContent>
               </Modal>
-            </CardFooter>
           </Card>
         </Flex>
     </Box>

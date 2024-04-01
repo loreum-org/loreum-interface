@@ -12,5 +12,5 @@ export const dataSource = {
 }
 
 export const addresses = {
-    
+
 }

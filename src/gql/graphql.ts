@@ -26,7 +26,7 @@ query getChamberByAddress($chamberAddress: String!) {
 
 export const getProposals = gql`
 query getProposals($chamberAddress: String!) {
-  proposalCreateds(orderBy: blockTimestamp, orderDirection: desc, where: {contractAddress: $chamberAddress}) {
+  createdProposals(orderBy: blockTimestamp, orderDirection: desc, where: {chamber: $chamberAddress}) {
     transactionHash
     proposalId
     blockTimestamp

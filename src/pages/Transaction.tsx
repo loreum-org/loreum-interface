@@ -79,7 +79,7 @@ interface AddressParams extends Params {
   address: string;
 }
 
-interface proposalCreated{
+interface createdProposal{
   transactionHash: string,
   proposalId: string,
   blockTimestamp: string,
@@ -88,8 +88,8 @@ interface proposalCreated{
   data: string[],
   voters: string[],
 }
-interface proposalCreateds{
-  proposalCreateds: proposalCreated[]
+interface createdProposals{
+  createdProposals: createdProposal[]
 }
 
 function Transaction(){
@@ -138,8 +138,10 @@ function Transaction(){
     chainId: sepolia.id,
   })
 
-  const {writeContract} = useWriteContract()
-  const Proposals = useQuery<proposalCreateds>({
+  const approveWriteContract = useWriteContract()
+  const executeWriteContract = useWriteContract()
+  
+  const Proposals = useQuery<createdProposals>({
     queryKey: ['proposalCreateds'],
     queryFn: async () => request(
       dataSource.subgraphUrl,
@@ -235,10 +237,10 @@ function Transaction(){
                 </Flex>
               ):(
                 <>
-                {Proposals.data?.proposalCreateds?.length===0?
+                {Proposals.data?.createdProposals?.length===0?
                 (<Center h={'10rem'}><Text>There is no transaction</Text></Center>):(
                   <>
-                {Proposals.data?.proposalCreateds?.map((proposal, index)=>( 
+                {Proposals.data?.createdProposals?.map((proposal, index)=>( 
                   <Accordion allowToggle>
                     <AccordionItem>
                       <AccordionButton rounded={'lg'}>
@@ -359,8 +361,22 @@ function Transaction(){
                   <Button isLoading={isPending} onClick={()=>{
                     signMessage({message: {raw: constructMessageHash.data as ByteArray}})
                   }}>Sign</Button>
-                  <Button isDisabled={!Boolean(data?.request)} onClick={()=> writeContract(data!.request)}>Approve</Button>
+                  <Button isDisabled={!Boolean(data?.request)} onClick={()=> approveWriteContract.writeContract(data!.request)}>Approve</Button>
                 </Flex>
+                </Flex>
+                <Flex py={3}>
+                  {approveWriteContract.isSuccess?(
+                    <Grid templateColumns={'repeat(3, 1fr)'}>
+                      <Text>Tnx Hash:</Text>
+                      <GridItem colSpan={2}>
+                        <a href={`http://sepolia.etherscan.io/tx/${approveWriteContract.data}`} target="_blank" rel="noopener noreferrer">
+                          <Text overflow={'auto'} > 
+                            {approveWriteContract.data}
+                          </Text>
+                        </a>
+                      </GridItem>
+                    </Grid>
+                  ):(<></>)}
                 </Flex>
                 <Flex pt={3}>
                   {isError?(
@@ -372,7 +388,7 @@ function Transaction(){
                     <>
                     {
                       isLoading?(
-                        <Alert status='info' rounded={'lg'}>
+                        <Alert status='loading' rounded={'lg'}>
                           <AlertIcon/>
                           Checking...
                         </Alert>
@@ -425,8 +441,22 @@ function Transaction(){
                   <Button isLoading={signExecute.isPending} onClick={()=>{
                     signExecute.signMessage({message: {raw: constructMessageHash1.data as ByteArray}})
                   }}>Sign</Button>
-                  <Button isDisabled={!Boolean(executeSimulate.data?.request)} onClick={()=> writeContract(executeSimulate.data!.request)}>Execute</Button>
+                  <Button isDisabled={!Boolean(executeSimulate.data?.request)} onClick={()=> executeWriteContract.writeContract(executeSimulate.data!.request)}>Execute</Button>
                 </Flex>
+                </Flex>
+                <Flex py={3}>
+                  {executeWriteContract.isSuccess?(
+                    <Grid templateColumns={'repeat(3, 1fr)'}>
+                      <Text>Tnx Hash:</Text>
+                      <GridItem colSpan={2}>
+                        <a href={`http://sepolia.etherscan.io/tx/${executeWriteContract.data}`} target="_blank" rel="noopener noreferrer">
+                          <Text overflow={'auto'} > 
+                            {executeWriteContract.data}
+                          </Text>
+                        </a>
+                      </GridItem>
+                    </Grid>
+                  ):(<></>)}
                 </Flex>
                 <Flex pt={3}>
                   {executeSimulate.isError?(
@@ -438,7 +468,7 @@ function Transaction(){
                     <>
                     {
                       executeSimulate.isLoading?(
-                        <Alert status='info' rounded={'lg'}>
+                        <Alert status='loading' rounded={'lg'}>
                           <AlertIcon/>
                           Checking...
                         </Alert>
