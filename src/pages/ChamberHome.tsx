@@ -4,13 +4,14 @@ import request from "graphql-request"
 import { getChamberByAddressQuery } from "../gql/graphql"
 import { useParams } from "react-router-dom"
 import NotFoundPage from "./NotFoundPage"
+import { dataSource } from "../data"
 
 const ChamberHome = () => {
   const {address} = useParams()
   const chamberDetails = useQuery<chambersState>({
     queryKey: ['chamberData'],
     queryFn: async () => request(
-      import.meta.env.VITE_SUBGRAPH_URL,
+      dataSource.subgraphUrl,
       getChamberByAddressQuery,
       {chamberAddress: address}
     ),

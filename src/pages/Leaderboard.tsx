@@ -14,6 +14,7 @@ import { getChamberByAddressQuery } from "../gql/graphql";
 import { useState } from "react";
 import { useWriteContract } from 'wagmi'
 import { GrPowerReset } from "react-icons/gr";
+import { dataSource } from "../data";
 
 const Leaderboard = () => {
   const bg = useColorModeValue("gray.100", "gray.700");
@@ -22,7 +23,7 @@ const Leaderboard = () => {
   const chamberDetails = useQuery<chambersState>({
     queryKey: ['chamberData'],
     queryFn: async () => request(
-      import.meta.env.VITE_SUBGRAPH_URL,
+      dataSource.subgraphUrl,
       getChamberByAddress,
       {chamberAddress: address}
     ),

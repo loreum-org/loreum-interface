@@ -61,6 +61,7 @@ import { UseReadContractReturnType, useAccount, useReadContract, useSignMessage,
 import { sepolia } from 'viem/chains';
 import { chamberAbi } from '../abi/chamberAbi';
 import Identicon from '../components/identicon';
+import { dataSource } from '../data';
 
 type State = {
     query: string
@@ -141,7 +142,7 @@ function Transaction(){
   const Proposals = useQuery<proposalCreateds>({
     queryKey: ['proposalCreateds'],
     queryFn: async () => request(
-      import.meta.env.VITE_SUBGRAPH_URL,
+      dataSource.subgraphUrl,
       getProposals,
       {chamberAddress: address}
     ),

@@ -10,6 +10,7 @@ import LeaderRow from "./LeaderRow"
 import { Center, Skeleton } from "@chakra-ui/react"
 import { WarningTwoIcon } from "@chakra-ui/icons"
 import { chambersState } from "../hooks/store"
+import { dataSource } from "../data"
 
 function TopLeader() {
   const { address } = useParams();
@@ -17,7 +18,7 @@ function TopLeader() {
   const chamberDetails = useQuery<chambersState>({
     queryKey: ['chamberData'],
     queryFn: async () => request(
-      import.meta.env.VITE_SUBGRAPH_URL,
+      dataSource.subgraphUrl,
       getChamberByAddress,
       {chamberAddress: address}
     ),

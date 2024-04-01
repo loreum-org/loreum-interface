@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/react-query'
 import { chambersState, useChambersStore, useQueryStore } from "../hooks/store";
 import { getChamberDeployedsQuery } from "../gql/graphql";
 import Error from "./Error";
+import { dataSource } from "../data";
 
 function Home() {
   const chambers = useChambersStore((state)=> state.chamberDeployeds)
@@ -26,7 +27,7 @@ function Home() {
   const { data, isLoading, isError} = useQuery<chambersState>({
     queryKey: ['chamberDeployeds'],
     queryFn: async () => request(
-      import.meta.env.VITE_SUBGRAPH_URL,
+      dataSource.subgraphUrl,
       getChamberDeployeds
     ),
     staleTime: Infinity,

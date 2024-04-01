@@ -8,9 +8,9 @@ export const links = {
 }
 
 export const dataSource = {
-    subgraphUrl: "https://api.studio.thegraph.com/proxy/67520/loreum-registry-sepolia/v0.0.1",
+    subgraphUrl: "https://api.studio.thegraph.com/proxy/67520/loreum-registry-sepolia/v0.0.3",
 }
 
 export const addresses = {
-
+    
 }
