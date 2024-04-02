@@ -1,5 +1,5 @@
 import {
-  Flex, Box, Heading, ButtonGroup, InputGroup,
+  Flex, Box, Heading, InputGroup,
   Button, Image, useColorMode, useColorModeValue,
   Hide, Grid, Input, Text, InputRightElement,
   Popover, PopoverTrigger, PopoverContent,
@@ -28,7 +28,6 @@ function Nav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const bg = useColorModeValue("gray.200", "gray.700");
   return (
-    <>
       <Flex px={"10px"} h={"70px"} minWidth={"100%"} justifyContent={"center"} borderBottom={"1px"} borderColor={bg} >
         <Flex alignItems="center"width={["640px ", "768px", "1024px", "1280px"]}justifyContent={"space-between"}>
           <a href="/">
@@ -56,12 +55,14 @@ function Nav() {
               </Box>
             </Flex>
           </a>
-          <ButtonGroup size={"xs"} alignItems={"center"}>
+          <Flex alignItems={"center"}>
             <Hide breakpoint="(max-width: 430px)">
-            <Tooltip hasArrow label={'Create Chamber'} rounded={'md'} w={'fit-content'} >
+              <Tooltip hasArrow label={'Create Chamber'} rounded={'md'} w={'fit-content'} >
+                <a href="/chamber">
                 <Button variant={'ghost'} fontSize={'xs'} h={'30px'}>
-                  <AddIcon />
+                    <AddIcon/>
                 </Button>
+                </a>
               </Tooltip>
               <Popover placement="top-start">
                 <PopoverTrigger>
@@ -94,6 +95,10 @@ function Nav() {
               <Button onClick={onOpen} variant={"ghost"}>
                 <ChevronLeftIcon boxSize={6} />
               </Button>
+            </Hide>
+            <CustomConnectButton />
+          </Flex>
+          <Hide breakpoint="(min-width: 430px)">
               <Drawer
                 placement={"right"}
                 size={"xs"}
@@ -231,28 +236,9 @@ function Nav() {
                   </DrawerFooter>
                 </DrawerContent>
               </Drawer>
-              {/* <Popover placement='top-start'>
-          <PopoverTrigger>
-            <Button variant={'ghost'}>
-              <LuBell size={15}/>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <PopoverHeader fontWeight='semibold'>Notification</PopoverHeader>
-            <PopoverArrow />
-            <PopoverCloseButton />
-            <PopoverBody>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-              tempor incididunt ut labore et dolore.
-            </PopoverBody>
-          </PopoverContent>
-        </Popover> */}
             </Hide>
-            <CustomConnectButton />
-          </ButtonGroup>
         </Flex>
       </Flex>
-    </>
   );
 }
 

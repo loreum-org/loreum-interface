@@ -55,15 +55,12 @@ const Leaderboard = () => {
   const {writeContract} = useWriteContract()
   const [isLoading1, setisLoading1] = useState(false)
   const account = useAccount()
-  const Balance = account.address
-  ? useReadContract({
+  const Balance = useReadContract({
       abi: erc20Abi,
       address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
       functionName: 'balanceOf',
-      args: [account.address],
-      chainId: sepolia.id,
+      args: [account.address!],
     })
-  :undefined;
 
   const Sign = async() => {
     try {
@@ -225,7 +222,7 @@ const Leaderboard = () => {
               <HStack>
                 <Heading size={'md'}>Balance:</Heading>
                 <Text >
-                {Balance?Balance.data?.toString() + " ":'0 '} 
+                {account.isConnected && Balance.isFetched?Balance.data?.toString() + " ":'0 '} 
                 {govTokenSymbol.data?.toString()}
                 </Text>
               </HStack>

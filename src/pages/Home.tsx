@@ -24,7 +24,7 @@ function Home() {
   const setChambers = useChambersStore((state)=>state.setChambers)
   const query = useQueryStore((state)=>state.query)
   const getChamberDeployeds = getChamberDeployedsQuery
-  const { data, isLoading, isError} = useQuery<chambersState>({
+  const { data, isError} = useQuery<chambersState>({
     queryKey: ['chamberDeployeds'],
     queryFn: async () => request(
       dataSource.subgraphUrl,
@@ -32,8 +32,8 @@ function Home() {
     ),
     staleTime: Infinity,
   })
-  if (isLoading === false){
-    setChambers(data?data.chamberDeployeds:[])
+  if (data){
+    setChambers(data.chamberDeployeds)
   }
 
   if (isError){

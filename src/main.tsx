@@ -27,12 +27,17 @@ import Builder from "./pages/Builder";
 import Token from "./pages/Token";
 import NFT from "./pages/NFT";
 import { config } from "./config";
+import CreateChamber from "./pages/CreateChamber";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
     errorElement: <NotFoundPage />,
+  },
+  {
+    path:'/chamber/',
+    element:<CreateChamber/>
   },
   {
     path: "/chamber/:address",
@@ -96,7 +101,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitProvider>
-              <Nav />
+              <Nav/>
               <RouterProvider router={router} />
               <Footer />
             </RainbowKitProvider>
