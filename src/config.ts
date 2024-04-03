@@ -8,7 +8,6 @@ export const config = getDefaultConfig({
     chains: [mainnet, sepolia],
     transports: {
       [mainnet.id]: http(),
-      // [sepolia.id]: http(`https://sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_API_KEY}`),
-      [sepolia.id]: http(),
+      [sepolia.id]: http('https://sepolia.infura.io/v3/615016a7e58a4ad0ad688a4a5849d55f'),
     },
   });

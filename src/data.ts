@@ -11,6 +11,6 @@ export const dataSource = {
     subgraphUrl: "https://api.studio.thegraph.com/proxy/67520/loreum-registry-sepolia/v0.0.3",
 }
 
-export const addresses = {
-
+export const address = {
+    registryProxy: "0x46A49D4391F2F220D3661b2a2BFe4b306EE18845",
 }

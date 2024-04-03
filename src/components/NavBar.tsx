@@ -58,7 +58,7 @@ function Nav() {
           <Flex alignItems={"center"}>
             <Hide breakpoint="(max-width: 430px)">
               <Tooltip hasArrow label={'Create Chamber'} rounded={'md'} w={'fit-content'} >
-                <a href="/chamber">
+                <a href="/create/">
                 <Button variant={'ghost'} fontSize={'xs'} h={'30px'}>
                     <AddIcon/>
                 </Button>

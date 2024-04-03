@@ -2,7 +2,7 @@ import { gql } from "graphql-request";
 
 export const getChamberDeployedsQuery = gql`
 query {
-  chamberDeployeds {
+  chamberDeployeds(orderBy: serial) {
     chamber
     govToken
     memberToken

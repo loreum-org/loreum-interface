@@ -36,7 +36,7 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
   },
   {
-    path:'/chamber/',
+    path:'/create/',
     element:<CreateChamber/>
   },
   {
