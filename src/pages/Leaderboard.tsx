@@ -1,6 +1,6 @@
 import { Box, Flex, Card , useColorModeValue, CardBody, Stack,Text, Heading, Divider, Center, Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, IconButton, HStack} from "@chakra-ui/react"
 import { useQuery } from "@tanstack/react-query";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount, useReadContract, useSimulateContract } from "wagmi";
 import { chamberAbi } from "../abi/chamberAbi";
 import { Form, Link, useParams } from "react-router-dom";
 import { sepolia } from "viem/chains";
@@ -52,66 +52,38 @@ const Leaderboard = () => {
   const [pdelegation, setPDelegation] = useState(0)
   const [dnftID, setDNftID] = useState(0)
   const [ddelegation, setDDelegation] = useState(0)
-  const {writeContract} = useWriteContract()
-  const [isLoading1, setisLoading1] = useState(false)
   const account = useAccount()
   const Balance = useReadContract({
-      abi: erc20Abi,
-      address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
-      functionName: 'balanceOf',
-      args: [account.address!],
-    })
+    abi: erc20Abi,
+    address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
+    functionName: 'balanceOf',
+    args: [account.address!],
+  })
 
-  const Sign = async() => {
-    try {
-      setisLoading1(true);
-      const sign = await writeContract({
-        abi: erc20Abi,
-        address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
-        functionName:'approve',
-        args: [`0x${address?.slice(2)}`,BigInt(pdelegation)]
-      })
-      console.log('sign Reuslt', sign)
-    }catch(error){
-      console.log("Error ", error);
-    }finally{
-      setisLoading1(false)
-    }
-  }
-  const promote = async() => {
-    try {
-      setisLoading1(true);
-      const promote = await writeContract({
-        abi: chamberAbi,
-        address: `0x${address?.slice(2)}`,
-        functionName:'promote',
-        args: [BigInt(pdelegation), BigInt(pnftID)]
-      })
-      console.log('sign Reuslt', promote)
-    }catch(error){
-      console.log("Error ", error);
-    }finally{
-      setisLoading1(false)
-    }
-  }
+  const approveSimulate = useSimulateContract({
+    abi: erc20Abi,
+    address: `0x${chamberDetails.data?.chamberDeployeds[0].govToken?.slice(2)}`,
+    functionName:'approve',
+    args: [`0x${address?.slice(2)}`,BigInt(pdelegation)]
+  })
 
-  const demote = async() => {
-    setisLoading1(true)
-    try {
-      const demote =await writeContract({
-        abi: chamberAbi,
-        address: `0x${address?.slice(2)}`,
-        functionName:'demote',
-        args: [BigInt(ddelegation),BigInt(dnftID)]
-      })
-      refetch
-      console.log('sign Reuslt', demote)
-    }catch(error){
-      console.log("Error ", error);
-    }finally{
-      setisLoading1(false)
-    }
-  }
+  const promoteSimulate = useSimulateContract({
+    abi: chamberAbi,
+    address: `0x${address?.slice(2)}`,
+    functionName:'promote',
+    args: [BigInt(pdelegation), BigInt(pnftID)]
+  })
+
+  const demoteSimulate = useSimulateContract({
+    abi: chamberAbi,
+    address: `0x${address?.slice(2)}`,
+    functionName:'demote',
+    args: [BigInt(ddelegation),BigInt(dnftID)]
+  })
+
+  const approveWrite = useWriteContract()
+  const promoteWrite = useWriteContract()
+  const demoteWrite = useWriteContract()
 
   return (
     <>
@@ -190,12 +162,21 @@ const Leaderboard = () => {
               <Form >
                 <FormControl isRequired>
                   <Flex gap={3} pb={5}>
-                  <Input type="number" onChange={(e)=>setPNftID(parseInt(e.target.value))} placeholder="Enter NFT ID"></Input>
-                  <Input type="number" onChange={(e)=>setPDelegation(parseInt(e.target.value))} placeholder="Enter Delegation"></Input>
+                  <Input type="number" onChange={(e)=>{if(e.target.value !== ''){
+                    setPNftID(parseInt(e.target.value))
+                  }}} placeholder="Enter NFT ID"></Input>
+                  <Input type="number" onChange={(e)=>{if(e.target.value !== ''){
+                    setPDelegation(parseInt(e.target.value))
+                  }}} placeholder="Enter Delegation"></Input>
                   </Flex>
                   <Flex justifyContent={'end'} gap={2}>
-                  <Button colorScheme="blue" size={'sm'} onClick={Sign} isLoading={isLoading1} variant={'outline'}>Approve</Button>
-                  <Button colorScheme="blue" size={'sm'} onClick={promote} isLoading={isLoading1}>Promote</Button>
+                    <Button colorScheme="blue" size={'sm'} 
+                    isLoading={approveSimulate.isLoading || approveWrite.isPending} 
+                    isDisabled={!Boolean(approveSimulate.data?.request)} 
+                    onClick={()=> {
+                      approveWrite.writeContract(approveSimulate.data!.request)
+                      }} variant={'outline'}>Approve</Button>
+                    <Button colorScheme="blue" size={'sm'} isLoading={promoteSimulate.isLoading || promoteWrite.isPending} isDisabled={!Boolean(promoteSimulate.data?.request)} onClick={()=> promoteWrite.writeContract(promoteSimulate.data!.request)}>Promote</Button>
                   </Flex>
                 </FormControl>
               </Form>
@@ -205,17 +186,16 @@ const Leaderboard = () => {
               <Stack pb={5}>
                 <Heading size={'md'}>Demote</Heading>
               </Stack>
-              <Form onSubmit={demote}>
-                <FormControl isRequired>
-                  <Flex gap={3} pb={5}>
-                  <Input type="number" onChange={(e)=>setDNftID(parseInt(e.target.value))} placeholder="Enter NFT ID"></Input>
-                  <Input type="number" onChange={(e)=>setDDelegation(parseInt(e.target.value))} placeholder="Enter Delegation"></Input>
-                  </Flex>
-                  <Flex justifyContent={'end'} gap={2}>
-                  <Button colorScheme="red" size={'sm'} type={'submit'} isLoading={isLoading1}  variant={'outline'}>Demote</Button>
-                  </Flex>
-                </FormControl>
-              </Form>
+              <Flex gap={3} pb={5}>
+              <Input type="number" onChange={(e)=> {if(e.target.value !== ''){
+                setDNftID(parseInt(e.target.value))
+              }}} placeholder="Enter NFT ID"></Input>
+              <Input type="number" onChange={(e)=>{if(e.target.value !== ''){
+                setDDelegation(parseInt(e.target.value))}}} placeholder="Enter Delegation"></Input>
+              </Flex>
+              <Flex justifyContent={'end'} gap={2}>
+              <Button colorScheme="red" size={'sm'} isLoading={demoteSimulate.isLoading || demoteWrite.isPending} isDisabled={!Boolean(demoteSimulate.data?.request)} onClick={()=> demoteWrite.writeContract(demoteSimulate.data!.request)} variant={'outline'}>Demote</Button>
+              </Flex>
             </CardBody>
             <Divider/>
             <CardBody>

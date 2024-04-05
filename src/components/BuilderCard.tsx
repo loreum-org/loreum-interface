@@ -257,6 +257,12 @@ function BuilderCard() {
     setTransactionToEmpty()
   }
 
+  // const res = useReadContract({
+  //   abi: abi,
+  //   address: to as `0x${string}`,
+  //   functionName: selectedFunction?.name || '',
+  // })
+
   const downloadJSON = () => {
     const fileDataString = JSON.stringify(transactionBatch, null, 2); // Convert JSON to string with indentation
     const blob = new Blob([fileDataString], { type: 'application/json' });
@@ -329,7 +335,7 @@ function BuilderCard() {
             <CardBody>
             <HStack spacing={'3'} justifyContent={'space-between'}>
               <Heading size={'md'}>Transaction Builder</Heading>
-              <Switch onChange={() => (
+              <Switch isDisabled onChange={() => (
                 setReadMode(!readMode),
                 readMode?(
                   toast({
@@ -388,7 +394,7 @@ function BuilderCard() {
               <Textarea fontSize={['xs','sm']} colorScheme='red' overflowX={'hidden'} h={'12rem'} placeholder='Address ABI' value={abiTextArea} onChange={handleAbiChange} isInvalid={isJSON(abiTextArea) || abiTextArea.length == 0 ?false:true}>
               </Textarea>
               <Flex pt={3} justifyContent={'end'}>
-              {isJSON(abiTextArea) || abiTextArea.length == 0 ?"":(<Flex gap={2} alignItems={'center'} pt={2} color={'red.500'} fontSize={'sm'}><WarningTwoIcon color={'red.500'}/> Invalid JSON</Flex>)}
+                {isJSON(abiTextArea) || abiTextArea.length == 0 ?"":(<Flex gap={2} alignItems={'center'} pt={2} color={'red.500'} fontSize={'sm'}><WarningTwoIcon color={'red.500'}/> Invalid JSON</Flex>)}
               </Flex>
             </CardBody>
             <Divider/>
@@ -397,7 +403,7 @@ function BuilderCard() {
                 <Heading size={'md'}>Transaction Details</Heading>
               </Stack>
               <Select mb={'20px'} key={abi?.length} placeholder='Select function' onChange={handelFunctionChange} isDisabled={abi?.length?false:true}>
-               {abi?.filter((abiFuntion) => readMode?(abiFuntion.type === "function" && abiFuntion.stateMutability === ('view'|| 'pure')):(abiFuntion.type === "function") ).map((abiFuntion, index)=>(
+               {abi?.filter((abiFuntion) => readMode?(abiFuntion.type === "function" && abiFuntion.stateMutability === ('view'|| 'pure')):(abiFuntion.type === "function" && abiFuntion.stateMutability !== ('view'|| 'pure')) ).map((abiFuntion, index)=>(
                   <option key={`${abiFuntion.name}-${index}`} value={abiFuntion.name}>{abiFuntion.name}</option>
                 ))}
               </Select>
@@ -434,7 +440,7 @@ function BuilderCard() {
                 </CardBody>
                 <Divider/>
                 <CardBody>
-                  
+                  {/* {res.data} */}
                 </CardBody>
               </Card>
             ):(

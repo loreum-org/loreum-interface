@@ -1,11 +1,8 @@
 import { Grid, useColorModeValue, Flex, Box } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useParams, NavLink, Outlet } from "react-router-dom";
-import { LuSettings } from "react-icons/lu";
 import { RiCoinsLine } from "react-icons/ri";
 import { MdOutlineLeaderboard } from "react-icons/md";
-import { GoFile } from "react-icons/go";
-import { BiMessageSquareDetail } from "react-icons/bi";
 import { GrTransaction } from "react-icons/gr";
 import { GoHome } from "react-icons/go";
 import MenuButton from "../components/MenuButton";
@@ -36,7 +33,7 @@ function Chamber() {
                             <MenuButton title="Home"/>
                         </Flex>
                     </NavLink>
-                    <NavLink end to={`/chamber/${address}/proposal`}
+                    {/* <NavLink end to={`/chamber/${address}/proposal`}
                      style={({isActive}) => {
                         return {
                             borderRadius: "0.375rem",
@@ -47,7 +44,7 @@ function Chamber() {
                             <GoFile/> 
                             <MenuButton title="Proposal"/>
                         </Flex>
-                    </NavLink>
+                    </NavLink> */}
                     <NavLink end to={`/chamber/${address}/assest`}
                     style={({isActive}) => {
                         return {
@@ -84,7 +81,7 @@ function Chamber() {
                             <MenuButton title="Leaderboard"/>
                         </Flex>
                     </NavLink>
-                    <NavLink end to={`/chamber/${address}/forum`}
+                    {/* <NavLink end to={`/chamber/${address}/forum`}
                     style={({isActive}) => {
                         return {
                             borderRadius: "0.375rem",
@@ -95,8 +92,8 @@ function Chamber() {
                             <BiMessageSquareDetail/> 
                             <MenuButton title="Forum"/>
                         </Flex>
-                    </NavLink>
-                    <NavLink end to={`/chamber/${address}/setting`}
+                    </NavLink> */}
+                    {/* <NavLink end to={`/chamber/${address}/setting`}
                     style={({isActive}) => {
                         return {
                             borderRadius: "0.375rem",
@@ -107,7 +104,7 @@ function Chamber() {
                             <LuSettings/> 
                             <MenuButton title="Setting"/>
                         </Flex>
-                    </NavLink>
+                    </NavLink> */}
                 </Flex>
             </Grid>
             <Box p={'1rem'} w={'full'} h={'full'}>
