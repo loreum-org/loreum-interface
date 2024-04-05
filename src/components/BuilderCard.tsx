@@ -1,5 +1,8 @@
-import { CheckIcon, DeleteIcon, DownloadIcon, SearchIcon, WarningTwoIcon } from '@chakra-ui/icons'
-import { useDisclosure, Text, Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel, Button, HStack, CardFooter, Grid, GridItem, useToast, Alert, AlertIcon, AlertTitle, AlertDescription } from '@chakra-ui/react'
+import { CheckIcon, DeleteIcon, DownloadIcon, ExternalLinkIcon, SearchIcon, WarningTwoIcon } from '@chakra-ui/icons'
+import { useDisclosure, Text, Box, Card, CardBody, Divider, Flex, Heading, IconButton, Input, 
+  InputGroup, InputRightElement, Stack, Textarea, Tooltip, useColorModeValue, Select, FormLabel, 
+  Button, HStack, CardFooter, Grid, GridItem, useToast, Alert, AlertIcon, AlertTitle, AlertDescription, 
+  Link } from '@chakra-ui/react'
 import { GrPowerReset } from "react-icons/gr";
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
@@ -54,6 +57,7 @@ interface Transaction {
   data: null | string;
   contractMethod: ContractMethod;
   contractInputsValues: ContractInputsValues;
+  functionAbi: AbiFunction | null;
 }
 
 interface ContractMethod {
@@ -230,6 +234,7 @@ function BuilderCard() {
         payable: false,
       },
       contractInputsValues: {} as Record<string, string>, // Initialize contractInputsValues as an empty object
+      functionAbi: selectedFunction,
     };
     if (selectedFunction && selectedFunction.inputs) {
       selectedFunction.inputs.forEach((input, index) => {
@@ -270,11 +275,13 @@ function BuilderCard() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
-  const [isChamber, setIsChamber] = useState(false)
+  const [readMode, setReadMode] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { address } = useParams<{ address: string }>();
   const toast = useToast()
+  const [sendTnxIsLoading, setSendTnxIsLoading] = useState(false);
   const callSendTransaction = async () => {
+    setSendTnxIsLoading(true);
     if (!address) {
       return;
     }
@@ -300,6 +307,7 @@ function BuilderCard() {
       });
       setTnxHash(result.toString());
       setSelectedFucntion(null);
+      setSendTnxIsLoading(false);
     } catch (error) {
       console.error(error);
       toast({
@@ -310,6 +318,7 @@ function BuilderCard() {
         isClosable: true,
         variant: 'subtle',
       });
+      setSendTnxIsLoading(false);
     }
   }
   return (
@@ -321,8 +330,26 @@ function BuilderCard() {
             <HStack spacing={'3'} justifyContent={'space-between'}>
               <Heading size={'md'}>Transaction Builder</Heading>
               <Switch onChange={() => (
-                setIsChamber(!isChamber),
-                setContractAddress('0x77181d4b22811242dE0d74BFd153de543a12D9dd')
+                setReadMode(!readMode),
+                readMode?(
+                  toast({
+                    title: 'Write Mode',
+                    description:("Can write contract.") ,
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                    variant: 'subtle',
+                  })
+                ):(
+                  toast({
+                    title: 'Read Mode',
+                    description:("Only can read contract.") ,
+                    status: 'info',
+                    duration: 5000,
+                    isClosable: true,
+                    variant: 'subtle',
+                  })
+                )
               )}/>
             </HStack>
             </CardBody>
@@ -330,7 +357,7 @@ function BuilderCard() {
             <CardBody >
               <FormLabel fontWeight={'bold'}>Address</FormLabel>
               <InputGroup  pb={5}>
-                <Input fontSize={['xs','sm']} isDisabled={isChamber} value={contractAddress} onChange={(e) => setContractAddress(e.currentTarget.value)}  placeholder='Enter Address'></Input>
+                <Input fontSize={['xs','sm']} value={contractAddress} onChange={(e) => setContractAddress(e.currentTarget.value)}  placeholder='Enter Address'></Input>
                 <InputRightElement>
                 {
                   isAddressValid?(
@@ -358,7 +385,7 @@ function BuilderCard() {
                 </Tooltip>
                 </Flex>
               </Flex>
-              <Textarea fontSize={['xs','sm']} colorScheme='red' overflowX={'hidden'} h={'12rem'} placeholder='Address ABI' value={abiTextArea} isDisabled={isChamber} onChange={handleAbiChange} isInvalid={isJSON(abiTextArea) || abiTextArea.length == 0 ?false:true}>
+              <Textarea fontSize={['xs','sm']} colorScheme='red' overflowX={'hidden'} h={'12rem'} placeholder='Address ABI' value={abiTextArea} onChange={handleAbiChange} isInvalid={isJSON(abiTextArea) || abiTextArea.length == 0 ?false:true}>
               </Textarea>
               <Flex pt={3} justifyContent={'end'}>
               {isJSON(abiTextArea) || abiTextArea.length == 0 ?"":(<Flex gap={2} alignItems={'center'} pt={2} color={'red.500'} fontSize={'sm'}><WarningTwoIcon color={'red.500'}/> Invalid JSON</Flex>)}
@@ -370,7 +397,7 @@ function BuilderCard() {
                 <Heading size={'md'}>Transaction Details</Heading>
               </Stack>
               <Select mb={'20px'} key={abi?.length} placeholder='Select function' onChange={handelFunctionChange} isDisabled={abi?.length?false:true}>
-               {abi?.filter((abiFuntion) => abiFuntion.type === "function").map((abiFuntion, index)=>(
+               {abi?.filter((abiFuntion) => readMode?(abiFuntion.type === "function" && abiFuntion.stateMutability === ('view'|| 'pure')):(abiFuntion.type === "function") ).map((abiFuntion, index)=>(
                   <option key={`${abiFuntion.name}-${index}`} value={abiFuntion.name}>{abiFuntion.name}</option>
                 ))}
               </Select>
@@ -397,6 +424,20 @@ function BuilderCard() {
             )}
             </CardBody>
           </Card>
+          {
+            readMode?(
+              <Card w={['full','30rem']} h={'min-content'} rounded={'xl'} bg={bg}>
+                <CardBody>
+                  <HStack>
+                    <Heading size={'md'}>Read Contract</Heading>
+                  </HStack>
+                </CardBody>
+                <Divider/>
+                <CardBody>
+                  
+                </CardBody>
+              </Card>
+            ):(
           <Card w={['full','30rem']} h={'min-content'} rounded={'xl'} bg={bg}>
             <CardBody>
               <HStack spacing={'3'} justifyContent={'space-between'}>
@@ -462,7 +503,11 @@ function BuilderCard() {
                 ))}
               </Accordion>
             <CardFooter justifyContent={'end'}>
-              <Button colorScheme='blue' isDisabled={transactionBatch.transactions.length>0?false:true} onClick={onOpen}>Create Batch</Button>
+              <Button colorScheme='blue' isDisabled={transactionBatch.transactions.length>0?false:true} onClick={onOpen}>
+                {
+                  readMode?"Read Batch":"Send Batch"
+                }
+              </Button>
             </CardFooter>
             <Divider/>
             <CardBody>
@@ -489,22 +534,26 @@ function BuilderCard() {
                   <ModalHeader>Confirm Transaction</ModalHeader>
                   <ModalCloseButton />
                   <ModalBody >
-                    <Text mr={3}>
-                      TnxHash
-                    </Text>
-                    <a href={`https://sepolia.etherscan.io/tx/${TnxHash}`} target='_blank'>
-                      <Button variant={'ghost'}>{TnxHash}</Button>
-                    </a>
+                      Transaction Hash: {TnxHash.length ? (
+                        <Link color={'skyblue'} href={`https://sepolia.etherscan.io/tx/${TnxHash}`} isExternal variant={'link'}>
+                          {TnxHash.slice(0,5)}..{TnxHash.slice(63)} <ExternalLinkIcon/>
+                        </Link>
+                      ):(
+                        <>
+                        0x000..000
+                        </>
+                      )}
                   </ModalBody>
                   <ModalFooter>
                     <Button colorScheme='blue' variant='outline' mr={3} onClick={onClose}>
                       Close
                     </Button>
-                    <Button onClick={callSendTransaction}  colorScheme='blue'>Confirm</Button>
+                    <Button onClick={callSendTransaction} isLoading={sendTnxIsLoading} colorScheme='blue'>Confirm</Button>
                   </ModalFooter>
                 </ModalContent>
               </Modal>
           </Card>
+        )}
         </Flex>
     </Box>
    </>
