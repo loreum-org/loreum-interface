@@ -413,7 +413,7 @@ function BuilderCard() {
                   <FormLabel>To</FormLabel>
                   <Input mb={'20px'} placeholder='To' value={to} onChange={(e)=>setTo(e.target.value)}></Input>
                   <FormLabel>Value</FormLabel>
-                  <Input mb={'20px'} placeholder='Value' value={value} type={'number'} onChange={(e)=>setValue(parseFloat(e.target.value))}></Input>
+                  <Input mb={'20px'} placeholder='Enter Wei' value={value} type={'number'} onChange={(e)=>setValue(parseFloat(e.target.value))}></Input>
                   <Flex flexFlow={'column'} gap={3}>
                     {selectedFunction.inputs.map((input, index) => (
                       <Flex key={index}flexFlow={'column'}>
@@ -488,7 +488,7 @@ function BuilderCard() {
                         </Flex>
                         <Flex justifyContent={'space-between'}>
                           <Text>value:</Text>
-                          <Text>{transaction.value} ETH</Text>
+                          <Text>{transaction.value}</Text>
                         </Flex>
                         <Grid templateColumns={'repeat(3, 1fr)'} justifyContent={'space-between'}>
                           <Text>data:</Text>

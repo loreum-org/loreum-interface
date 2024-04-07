@@ -29,7 +29,7 @@ import {
   Alert,
   AlertIcon
 } from '@chakra-ui/react';
-import { ByteArray } from 'viem'
+import { ByteArray, encodeAbiParameters } from 'viem'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import {
   Modal,
@@ -58,7 +58,6 @@ import { useQuery } from '@tanstack/react-query';
 import request from 'graphql-request';
 import { getProposals } from '../gql/graphql';
 import { UseReadContractReturnType, useAccount, useReadContract, useSignMessage, useWriteContract } from 'wagmi';
-import { sepolia } from 'viem/chains';
 import { chamberAbi } from '../abi/chamberAbi';
 import Identicon from '../components/identicon';
 import { dataSource } from '../data';
@@ -97,6 +96,8 @@ function Transaction(){
   const [proposalId, setProposalId] = useState<string>('');
   const [nftId1, setNftId1] = useState<string>('');
   const [proposalId1, setProposalId1] = useState<string>('');
+  const [cancelProposal, setCancelProposal] = useState('');
+  const [cancelProposalID, setCancelProposalID] = useState('');
 
   const {address} = useParams<AddressParams>();
   const {chainId} = useAccount();
@@ -110,7 +111,6 @@ function Transaction(){
     abi: chamberAbi,
     address: `0x${address?.slice(2)}`,
     functionName: 'constructMessageHash',
-    chainId: sepolia.id,
     args: [BigInt(proposalId1), BigInt(nftId1)],
   });
 
@@ -118,7 +118,6 @@ function Transaction(){
     abi: chamberAbi,
     address: `0x${address?.slice(2)}`,
     functionName: 'constructMessageHash',
-    chainId: sepolia.id,
     args: [BigInt(proposalId), BigInt(nftId)],
   });
 
@@ -127,7 +126,6 @@ function Transaction(){
     abi: chamberAbi,
     functionName: 'approve',
     args: [BigInt(proposalId1), BigInt(nftId1), signMessageData?(signMessageData):'0x'],
-    chainId: sepolia.id,
   })
 
   const executeSimulate = useSimulateContract({
@@ -135,11 +133,26 @@ function Transaction(){
     abi: chamberAbi,
     functionName: 'execute',
     args: [BigInt(proposalId), BigInt(nftId), signExecute.data?(signExecute.data):'0x'],
-    chainId: sepolia.id,
+  })
+
+  const cancelSimulate = useSimulateContract({
+    address: `0x${address?.slice(2)}`,
+    abi: chamberAbi,
+    functionName: 'create',
+    args: [[`0x${address?.slice(2)}`],[BigInt(0)],[`0x${cancelProposal?.slice(2)}`]]
+  })
+
+  const [proposalReadID, setProposalReadID] = useState('');
+  const proposalRead = useReadContract({
+    address:`0x${address?.slice(2)}`,
+    abi:chamberAbi,
+    functionName: 'proposal',
+    args: [BigInt(proposalReadID)],
   })
 
   const approveWriteContract = useWriteContract()
   const executeWriteContract = useWriteContract()
+  const cancelWriteContract = useWriteContract()
   
   const Proposals = useQuery<createdProposals>({
     queryKey: ['proposalCreateds'],
@@ -150,6 +163,34 @@ function Transaction(){
     ),
   })
 
+  function getData(params:string) {
+    const encodedData = encodeAbiParameters(
+      [{name: "proposalId", type: "uint256"}],
+      [BigInt(params)]
+    )
+    const encodedDataWithFunctionSelector = "0x40e58ee5" + encodedData.slice(2)
+    setCancelProposal(encodedDataWithFunctionSelector);
+  }
+
+  function proposalState(params:string | undefined){
+    switch(params){
+      case '0':
+        return 'Null';
+        break;
+      case '1':
+        return 'Initialized';
+        break;
+      case '2':
+        return 'Executed';
+        break;
+      case '3':
+        return 'Canceled';
+        break;
+      default:
+        return 'Unknown';
+    }
+  }
+
   const OverlayOne = () => (
     <ModalOverlay
       bg='blackAlpha.300'
@@ -157,6 +198,8 @@ function Transaction(){
     />
   )
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const cancelModal = useDisclosure();
+  const proposalModal = useDisclosure();
   const [overlay, setOverlay] = useState(<OverlayOne />)
   return (
     <>
@@ -241,7 +284,7 @@ function Transaction(){
                 (<Center h={'10rem'}><Text>There is no transaction</Text></Center>):(
                   <>
                 {Proposals.data?.createdProposals?.map((proposal, index)=>( 
-                  <Accordion allowToggle>
+                  <Accordion allowToggle key={index}>
                     <AccordionItem>
                       <AccordionButton rounded={'lg'}>
                         <Grid w={'full'} templateColumns={'repeat(8, 1fr)'} gap={3} justifyItems={'center'} key={index}>
@@ -308,12 +351,27 @@ function Transaction(){
                           ))}
                         </Grid>
                         <Divider/>
+                        <Flex justifyContent={'space-between'} py={2}>
                         <Flex gap={3} flexFlow={'row'} py={1}>
                         Voters: 
                         {proposal.voters.map((voter, index)=>(
                           <Text key={index}>{voter}</Text>
-                          ))}
-                          </Flex>
+                        ))}
+                        </Flex>
+                        <Flex gap={3}>
+                        <Button onClick={()=>{
+                          setProposalReadID(proposal.proposalId);
+                          proposalModal.onOpen()
+                        }}>
+                          Proposal State
+                        </Button>
+                        <Button onClick={()=>{
+                          setCancelProposalID(proposal.proposalId)
+                          getData(proposal.proposalId),
+                          cancelModal.onOpen()
+                        }}>Cancel</Button>
+                        </Flex>
+                        </Flex>
                       </AccordionPanel>
                     </AccordionItem>
                   </Accordion>
@@ -488,6 +546,79 @@ function Transaction(){
           </TabPanel>
         </TabPanels>
       </Tabs>
+      <Modal isOpen={cancelModal.isOpen} onClose={cancelModal.onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Cancel Proposal</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Are you sure you want to cancel proposalID {cancelProposalID}
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={cancelModal.onClose} variant='ghost'>Close</Button>
+            <Button colorScheme='blue' mr={3} isLoading={cancelWriteContract.isPending} isDisabled={!Boolean(cancelSimulate.data?.request)}  onClick={()=> cancelWriteContract.writeContract(cancelSimulate.data!.request)}>
+              Confirm
+            </Button>
+          </ModalFooter>
+          <Divider/>
+          <ModalBody>
+            {cancelSimulate.isError?(
+              <Alert status='error' rounded={'lg'}>
+                <AlertIcon/>
+                Can't cancel this proposal.
+              </Alert>
+            ):(
+              <>
+              {
+                cancelSimulate.isLoading?(
+                  <Alert status='loading' rounded={'lg'}>
+                    <AlertIcon/>
+                    Checking...
+                  </Alert>
+                ):(
+                  <Alert status='success' rounded={'lg'}>
+                    <AlertIcon/>
+                    Can cancel this proposal.
+                  </Alert>
+                )
+              }
+              </>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal onClose={proposalModal.onClose} isOpen={proposalModal.isOpen}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {proposalRead.isLoading?(
+              <>
+              Loading...
+              </>
+            ):(
+              <>
+              <Flex flexFlow={'column'} w={'full'}>
+                <Grid templateColumns={'repeat(2, 1fr)'}>
+                  <GridItem>Total Approval</GridItem>
+                  <GridItem>{proposalRead.data?.[0].toString()}</GridItem>
+                </Grid>
+                <Grid templateColumns={'repeat(2, 1fr)'}>
+                  <GridItem>Proposal State</GridItem>
+                  <GridItem>
+                    {proposalState(proposalRead.data?.[1].toString())}
+                  </GridItem>
+                </Grid>
+              </Flex>
+              </>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={proposalModal.onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
