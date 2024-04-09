@@ -1,4 +1,4 @@
-import { CheckCircleIcon, QuestionIcon, Search2Icon } from '@chakra-ui/icons';
+import { CheckCircleIcon, CopyIcon, ExternalLinkIcon, Search2Icon } from '@chakra-ui/icons';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,17 +17,17 @@ import {
   Text,
   Skeleton,
   Center,
-  Tooltip,
   Card,
   CardBody,
-  Box,
   Stack,
   Heading,
   FormLabel,
   InputRightElement,
   IconButton,
   Alert,
-  AlertIcon
+  AlertIcon,
+  useToast,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { ByteArray, encodeAbiParameters } from 'viem'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
@@ -50,17 +50,20 @@ import {
 } from '@chakra-ui/react'
 import { MdCallMade } from "react-icons/md";
 import { MdCallReceived } from "react-icons/md";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { create } from "zustand"
 import { useParams, Params } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import request from 'graphql-request';
 import { getProposals } from '../gql/graphql';
-import { UseReadContractReturnType, useAccount, useReadContract, useSignMessage, useWriteContract } from 'wagmi';
+import { UseReadContractReturnType, useReadContract, useSignMessage, useWriteContract } from 'wagmi';
 import { chamberAbi } from '../abi/chamberAbi';
 import Identicon from '../components/identicon';
 import { dataSource } from '../data';
+import { formatEther } from 'viem'
+import { readContract } from '@wagmi/core';
+import { config } from '../config';
 
 type State = {
     query: string
@@ -94,13 +97,12 @@ interface createdProposals{
 function Transaction(){
   const [nftId, setNftId] = useState<string>('');
   const [proposalId, setProposalId] = useState<string>('');
-  const [nftId1, setNftId1] = useState<string>('');
-  const [proposalId1, setProposalId1] = useState<string>('');
+  const [nftId1, setNftId1] = useState<number>(0);
+  const [proposalId1, setProposalId1] = useState<number>(0);
   const [cancelProposal, setCancelProposal] = useState('');
   const [cancelProposalID, setCancelProposalID] = useState('');
 
   const {address} = useParams<AddressParams>();
-  const {chainId} = useAccount();
   const query = useQueryStore((state)=> state.query);
   const setQuery = useQueryStore((state)=> state.setQuery);
 
@@ -142,14 +144,6 @@ function Transaction(){
     args: [[`0x${address?.slice(2)}`],[BigInt(0)],[`0x${cancelProposal?.slice(2)}`]]
   })
 
-  const [proposalReadID, setProposalReadID] = useState('');
-  const proposalRead = useReadContract({
-    address:`0x${address?.slice(2)}`,
-    abi:chamberAbi,
-    functionName: 'proposal',
-    args: [BigInt(proposalReadID)],
-  })
-
   const approveWriteContract = useWriteContract()
   const executeWriteContract = useWriteContract()
   const cancelWriteContract = useWriteContract()
@@ -161,6 +155,7 @@ function Transaction(){
       getProposals,
       {chamberAddress: address}
     ),
+    refetchOnMount: true
   })
 
   function getData(params:string) {
@@ -194,13 +189,51 @@ function Transaction(){
   const OverlayOne = () => (
     <ModalOverlay
       bg='blackAlpha.300'
-      backdropFilter='blur(5px) '
+      backdropFilter='blur(5px)'
     />
   )
   const { isOpen, onOpen, onClose } = useDisclosure()
   const cancelModal = useDisclosure();
-  const proposalModal = useDisclosure();
   const [overlay, setOverlay] = useState(<OverlayOne />)
+  const toast = useToast()
+  const [proposalStates, setProposalStates] = useState<ProposalState[]>([])
+  const [pslo, sepslo] = useState(false);
+  const expandBg = useColorModeValue('gray.200', 'gray.700')
+  interface ProposalState {
+    proposalID: string,
+    approvals: string,
+    state: string,
+  }
+  useEffect(() => {
+    const fetchProposalStates = async () => {
+      try {
+        sepslo(true)
+        if (Proposals.isFetched) {
+          const newProposalStates: ProposalState[] = await Promise.all(
+            Proposals.data?.createdProposals.map(async (proposal) => {
+              const data = await readContract(config,{
+                address: `0x${address?.slice(2)}`,
+                abi: chamberAbi,
+                functionName: 'proposal',
+                args: [BigInt(proposal.proposalId)],
+              });
+              console.log(data[0].toString(), data[1].toString());
+              return {
+                proposalID: proposal.proposalId,
+                approvals: data?.[0]?.toString() || '',
+                state: data?.[1]?.toString() || '',
+              };
+            }) || []
+          );
+          setProposalStates(newProposalStates);
+          sepslo(false)
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchProposalStates();
+  }, [Proposals.data, Proposals.isFetched]);
   return (
     <>
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -209,10 +242,16 @@ function Transaction(){
           <ModalHeader>Receive</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>{address}</Text>
+            <Flex gap={2} alignItems={'center'}>
+            <Text fontSize={'md'}>{address}</Text>
+            </Flex>
           </ModalBody>
-          <ModalFooter>
-            <Button onClick={onClose}>Done</Button>
+          <ModalFooter gap={3}>
+          <IconButton aria-label='copy' size={'sm'} variant={'outline'} icon={<CopyIcon/>} onClick={()=>{
+              navigator.clipboard.writeText(address!),
+              toast({ title: 'Address Copied', status: 'success', duration: 3000})
+            }}/>
+            <Button size={'sm'} variant={'outline'} onClick={onClose}>Done</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -260,18 +299,15 @@ function Transaction(){
         <TabPanels>
           <TabPanel >
           <Hide below='sm'>
-        <Grid templateColumns={'repeat(8, 1fr)'} justifyItems={'center'} pb={'0.5rem'} fontSize={'xs'} color={'gray.500'} fontWeight={'semibold'}>
-          <GridItem>Transaction</GridItem>
-          <GridItem>Txn Hash</GridItem>
-          <GridItem>Amount</GridItem>
-          <GridItem>Chamber</GridItem>
-          <GridItem>Proposal ID</GridItem>
-          <GridItem>Network</GridItem>
-          <GridItem>Time</GridItem>
-          <GridItem>Status</GridItem>
+        <Grid templateColumns={'repeat(6, 1fr)'} justifyItems={'center'} pb={'0.5rem'} fontSize={'xs'} color={'gray.500'} fontWeight={'semibold'}>
+          <GridItem >Tx Hash</GridItem>
+          <GridItem >Proposal ID</GridItem>
+          <GridItem >Approvals</GridItem>
+          <GridItem >State</GridItem>
+          <GridItem >Date</GridItem>
         </Grid>
         </Hide>
-              {Proposals.isLoading || Proposals.isRefetching?(
+              {Proposals.isLoading || Proposals.isRefetching || pslo || (Proposals.data?.createdProposals.length!==proposalStates.length)?(
                 <Flex flexFlow={'column'} rowGap={3}>
                 <Skeleton rounded={'lg'} height='40px'/>
                 <Skeleton rounded={'lg'} height='40px'/>
@@ -286,41 +322,30 @@ function Transaction(){
                 {Proposals.data?.createdProposals?.map((proposal, index)=>( 
                   <Accordion allowToggle key={index}>
                     <AccordionItem>
-                      <AccordionButton rounded={'lg'}>
-                        <Grid w={'full'} templateColumns={'repeat(8, 1fr)'} gap={3} justifyItems={'center'} key={index}>
-                          <GridItem justifySelf={'start'}>
-                            <Flex gap={3} alignItems={'center'}>
-                            <MdCallMade/>
-                            {"Create"}
+                      <AccordionButton _expanded={{ bg: expandBg }}>
+                        <Grid w={'full'} templateColumns={'repeat(6, 1fr)'} gap={3} justifyItems={'center'} key={index}>
+                          <GridItem _hover={{color:'blue.500'}}>
+                            <a href={`http://sepolia.etherscan.io/tx/${proposal.transactionHash}`} target="_blank" rel="noopener noreferrer">
+                              {proposal.transactionHash.slice(0, 5)}...{proposal.transactionHash.slice(63)}
+                              <IconButton aria-label="Copy" _hover={{color:'blue.500'}} variant={'ghost'} icon={<ExternalLinkIcon/>} size="xs" ml={2}/>
+                            </a>
+                          </GridItem>
+                          <GridItem>{proposal.proposalId}</GridItem>
+                          <GridItem>{proposalStates[index].approvals}</GridItem>
+                          <GridItem>{proposalState(proposalStates[index].state)}</GridItem>
+                          <GridItem>{new Date(parseInt(proposal.blockTimestamp) * 1000).toLocaleDateString()}</GridItem>
+                          <GridItem>
+                            <Flex>
+                            <AccordionIcon/>
                             </Flex>
                           </GridItem>
-                          <GridItem _hover={{color: 'blue.400'}}>
-                            <a href={`http://sepolia.etherscan.io/tx/${proposal.transactionHash}`} target="_blank" rel="noopener noreferrer">
-                              {proposal.transactionHash.slice(0,6)}...{proposal.transactionHash.slice(62)}
-                            </a>
-                          </GridItem>
-                          <GridItem>0</GridItem>
-                          <GridItem _hover={{color: 'blue.400'}}>
-                            <a href={`http://sepolia.etherscan.io/address/${address}`} target="_blank" rel="noopener noreferrer">
-                              {address?.slice(0,6)}...{address?.slice(38)}
-                            </a>
-                            </GridItem>
-                          <GridItem>{proposal.proposalId}</GridItem>
-                          <GridItem>{chainId===1?"Ethereum":"Sepolia"}</GridItem>
-                          <GridItem>{new Date(parseInt(proposal.blockTimestamp) * 1000).toLocaleDateString()}</GridItem>
-                          <GridItem justifySelf={'end'}>
-                            <Tooltip label="Unknown">
-                            <QuestionIcon/>
-                            </Tooltip>
-                          </GridItem>
                         </Grid>
-                        <AccordionIcon/>
                       </AccordionButton>
                       <AccordionPanel my={3}>
                         <Grid gap={2}>
                           <Divider/>
                           <GridItem>
-                            <Grid templateColumns={'repeat(3, 1fr)'} justifyItems={'center'}>
+                            <Grid templateColumns={'repeat(3, 1fr)'}  fontWeight={'bold'}>
                               <GridItem>Target</GridItem>
                               <GridItem>Value</GridItem>
                               <GridItem>Data</GridItem>
@@ -329,22 +354,29 @@ function Transaction(){
                           <Divider/>
                           {proposal.target.map((_, index)=>(
                             <GridItem key={index} py={1}>
-                            <Grid templateColumns={'repeat(3, 1fr)'} justifyItems={'center'}>
-                              <GridItem>
-                                <Flex gap={3} alignItems={'center'}>
-                                <Identicon address={proposal.target[index].toString()} isize={20}/>
-                                <Text>
-                                {proposal.target[index]}
-                                </Text>
+                            <Grid templateColumns={'repeat(3, 1fr)'}>
+                              <GridItem >
+                                <a href={`http://sepolia.etherscan.io/address/${proposal.target[index]}`} target="_blank" rel="noopener noreferrer">    
+                                <Flex gap={2} alignItems={'center'} _hover={{color:'blue.500'}}>
+                                  <Identicon address={proposal.target[index].toString()} isize={20}/>
+                                  {proposal.target[index].slice(0,5)}...{proposal.target[index].slice(-3)}
+                                  <IconButton aria-label="Copy" variant={'ghost'} icon={<ExternalLinkIcon/>} size="xs" />
                                 </Flex>
+                                </a>
                               </GridItem>
-                              <GridItem>{proposal.value[index]}</GridItem>
                               <GridItem>
-                                <Box width={'25rem'}>
+                                {formatEther(BigInt(proposal.value[index]))} ETH
+                              </GridItem>
+                              <GridItem>
+                                <Flex gap={2}>
                                   <Text>
-                                {proposal.data[index]}
+                                    {proposal.data[index].slice(0,10)}...{proposal.data[index].slice(-10)}
                                   </Text>
-                                </Box>
+                                  <IconButton aria-label='copy' size={'xs'} icon={<CopyIcon/>} onClick={()=>{
+                                    navigator.clipboard.writeText(proposal.data[index]),
+                                    toast({title:'Data Copied', status:'success', duration:3000})
+                                  }} />
+                                </Flex>
                               </GridItem>
                             </Grid>
                             </GridItem>
@@ -352,20 +384,16 @@ function Transaction(){
                         </Grid>
                         <Divider/>
                         <Flex justifyContent={'space-between'} py={2}>
-                        <Flex gap={3} flexFlow={'row'} py={1}>
-                        Voters: 
+                        <Flex gap={3} flexFlow={'row'} py={1} alignItems={'center'}>
+                          <Heading size={'sm'}>
+                          Voters:
+                          </Heading>
                         {proposal.voters.map((voter, index)=>(
-                          <Text key={index}>{voter}</Text>
+                          <Button size={'sm'} key={index}>{voter}</Button>
                         ))}
                         </Flex>
                         <Flex gap={3}>
-                        <Button onClick={()=>{
-                          setProposalReadID(proposal.proposalId);
-                          proposalModal.onOpen()
-                        }}>
-                          Proposal State
-                        </Button>
-                        <Button onClick={()=>{
+                        <Button isDisabled={proposalStates[index].state!=='1'} variant={'outline'} size={'sm'} onClick={()=>{
                           setCancelProposalID(proposal.proposalId)
                           getData(proposal.proposalId),
                           cancelModal.onOpen()
@@ -394,11 +422,11 @@ function Transaction(){
                 <Flex justifyContent={'end'} flexFlow={'row'} gap={5} >
                   <Flex flexFlow={'column'}>
                     <FormLabel>NFT ID</FormLabel>
-                    <Input w={'auto'} value={nftId1} onChange={(e)=>{setNftId1(e.target.value)}}   placeholder='Enter Your NFT ID'></Input>
+                    <Input w={'auto'} value={nftId1} type='number' onChange={(e)=>{if(e.target.value !== ''){setNftId1(parseInt(e.target.value))}}}  placeholder='Enter Your NFT ID'></Input>
                   </Flex>
                   <Flex flexFlow={'column'}>
                     <FormLabel>Proposal ID</FormLabel>
-                    <Input w={'auto'} value={proposalId1} onChange={(e)=>{setProposalId1(e.target.value)}} placeholder='Enter Proposal ID'></Input>
+                    <Input w={'auto'} value={proposalId1} type='number' onChange={(e)=>{if(e.target.value !== ''){setProposalId1(parseInt(e.target.value))}}} placeholder='Enter Proposal ID'></Input>
                   </Flex>
                 </Flex>
                   <Flex flexFlow={'column'}>
@@ -419,17 +447,28 @@ function Transaction(){
                   <Button isLoading={isPending} onClick={()=>{
                     signMessage({message: {raw: constructMessageHash.data as ByteArray}})
                   }}>Sign</Button>
-                  <Button isDisabled={!Boolean(data?.request)} onClick={()=> approveWriteContract.writeContract(data!.request)}>Approve</Button>
+                  <Button isDisabled={!Boolean(data?.request)} onClick={()=>{
+                    approveWriteContract.writeContract(data!.request)
+                    }}>Approve</Button>
                 </Flex>
                 </Flex>
                 <Flex py={3}>
                   {approveWriteContract.isSuccess?(
                     <Grid templateColumns={'repeat(3, 1fr)'}>
-                      <Text>Tnx Hash:</Text>
+                      <Text>Transaction Hash:</Text>
                       <GridItem colSpan={2}>
                         <a href={`http://sepolia.etherscan.io/tx/${approveWriteContract.data}`} target="_blank" rel="noopener noreferrer">
-                          <Text overflow={'auto'} > 
-                            {approveWriteContract.data}
+                          <Text overflow={'auto'}  color={'blue.500'} pl={3} fontWeight={'semibold'}> 
+                            {approveWriteContract.isSuccess?(
+                              <>
+                              {approveWriteContract.data?.slice(0,5)}...{approveWriteContract.data?.slice(-3)}
+                              <ExternalLinkIcon/>
+                              </>
+                            ):(
+                              <>
+                              0x000.000
+                              </>
+                            )}
                           </Text>
                         </a>
                       </GridItem>
@@ -505,11 +544,20 @@ function Transaction(){
                 <Flex py={3}>
                   {executeWriteContract.isSuccess?(
                     <Grid templateColumns={'repeat(3, 1fr)'}>
-                      <Text>Tnx Hash:</Text>
+                      <Text>Transaction Hash:</Text>
                       <GridItem colSpan={2}>
                         <a href={`http://sepolia.etherscan.io/tx/${executeWriteContract.data}`} target="_blank" rel="noopener noreferrer">
-                          <Text overflow={'auto'} > 
-                            {executeWriteContract.data}
+                          <Text overflow={'auto'} color={'blue.500'} pl={3} fontWeight={'semibold'}> 
+                            {executeWriteContract.isSuccess?(
+                               <>
+                               {executeWriteContract.data?.slice(0,5)}...{executeWriteContract.data?.slice(-3)}
+                               <ExternalLinkIcon/>
+                               </>
+                            ):(
+                              <>
+                              0x000.000
+                              </>
+                            )}
                           </Text>
                         </a>
                       </GridItem>
@@ -585,38 +633,6 @@ function Transaction(){
               </>
             )}
           </ModalBody>
-        </ModalContent>
-      </Modal>
-      <Modal onClose={proposalModal.onClose} isOpen={proposalModal.isOpen}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            {proposalRead.isLoading?(
-              <>
-              Loading...
-              </>
-            ):(
-              <>
-              <Flex flexFlow={'column'} w={'full'}>
-                <Grid templateColumns={'repeat(2, 1fr)'}>
-                  <GridItem>Total Approval</GridItem>
-                  <GridItem>{proposalRead.data?.[0].toString()}</GridItem>
-                </Grid>
-                <Grid templateColumns={'repeat(2, 1fr)'}>
-                  <GridItem>Proposal State</GridItem>
-                  <GridItem>
-                    {proposalState(proposalRead.data?.[1].toString())}
-                  </GridItem>
-                </Grid>
-              </Flex>
-              </>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={proposalModal.onClose}>Close</Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
