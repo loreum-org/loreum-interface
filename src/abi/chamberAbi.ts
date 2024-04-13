@@ -1,38 +1,16 @@
 export const chamberAbi = [
-  {
-    type: "constructor",
-    inputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "fallback",
-    stateMutability: "payable",
-  },
-  {
-    type: "receive",
-    stateMutability: "payable",
-  },
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
+  { type: "fallback", stateMutability: "payable" },
+  { type: "receive", stateMutability: "payable" },
   {
     type: "function",
     name: "accountDelegation",
     inputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "userAddress", type: "address", internalType: "address" },
+      { name: "tokenID", type: "uint256", internalType: "uint256" },
     ],
     outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "amountDelegated", type: "uint256", internalType: "uint256" },
     ],
     stateMutability: "view",
   },
@@ -40,21 +18,8 @@ export const chamberAbi = [
     type: "function",
     name: "approve",
     inputs: [
-      {
-        name: "proposalId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "signature",
-        type: "bytes",
-        internalType: "bytes",
-      },
+      { name: "proposalId", type: "uint256", internalType: "uint256" },
+      { name: "tokenId", type: "uint256", internalType: "uint256" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -62,13 +27,7 @@ export const chamberAbi = [
   {
     type: "function",
     name: "cancel",
-    inputs: [
-      {
-        name: "proposalId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    inputs: [{ name: "proposalId", type: "uint256", internalType: "uint256" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -76,45 +35,19 @@ export const chamberAbi = [
     type: "function",
     name: "constructMessageHash",
     inputs: [
-      {
-        name: "proposalId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "proposalId", type: "uint256", internalType: "uint256" },
+      { name: "tokenId", type: "uint256", internalType: "uint256" },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-    ],
+    outputs: [{ name: "", type: "bytes32", internalType: "bytes32" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "create",
     inputs: [
-      {
-        name: "targets",
-        type: "address[]",
-        internalType: "address[]",
-      },
-      {
-        name: "values",
-        type: "uint256[]",
-        internalType: "uint256[]",
-      },
-      {
-        name: "datas",
-        type: "bytes[]",
-        internalType: "bytes[]",
-      },
+      { name: "targets", type: "address[]", internalType: "address[]" },
+      { name: "values", type: "uint256[]", internalType: "uint256[]" },
+      { name: "datas", type: "bytes[]", internalType: "bytes[]" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -123,16 +56,8 @@ export const chamberAbi = [
     type: "function",
     name: "demote",
     inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "amount", type: "uint256", internalType: "uint256" },
+      { name: "tokenId", type: "uint256", internalType: "uint256" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -141,34 +66,15 @@ export const chamberAbi = [
     type: "function",
     name: "domainSeparator",
     inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bytes32",
-        internalType: "bytes32",
-      },
-    ],
+    outputs: [{ name: "", type: "bytes32", internalType: "bytes32" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "execute",
     inputs: [
-      {
-        name: "proposalId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "signature",
-        type: "bytes",
-        internalType: "bytes",
-      },
+      { name: "proposalId", type: "uint256", internalType: "uint256" },
+      { name: "tokenId", type: "uint256", internalType: "uint256" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -178,16 +84,8 @@ export const chamberAbi = [
     name: "getLeaderboard",
     inputs: [],
     outputs: [
-      {
-        name: "",
-        type: "uint256[]",
-        internalType: "uint256[]",
-      },
-      {
-        name: "",
-        type: "uint256[]",
-        internalType: "uint256[]",
-      },
+      { name: "leaders", type: "uint256[]", internalType: "uint256[]" },
+      { name: "delegation", type: "uint256[]", internalType: "uint256[]" },
     ],
     stateMutability: "view",
   },
@@ -195,29 +93,15 @@ export const chamberAbi = [
     type: "function",
     name: "govToken",
     inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "initialize",
     inputs: [
-      {
-        name: "_memberToken",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "_govToken",
-        type: "address",
-        internalType: "address",
-      },
+      { name: "_memberToken", type: "address", internalType: "address" },
+      { name: "_govToken", type: "address", internalType: "address" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -225,187 +109,75 @@ export const chamberAbi = [
   {
     type: "function",
     name: "leaderboard",
-    inputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    inputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "locked",
     inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "memberToken",
     inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "nonce",
     inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "onERC1155BatchReceived",
     inputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "",
-        type: "uint256[]",
-        internalType: "uint256[]",
-      },
-      {
-        name: "",
-        type: "uint256[]",
-        internalType: "uint256[]",
-      },
-      {
-        name: "",
-        type: "bytes",
-        internalType: "bytes",
-      },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "uint256[]", internalType: "uint256[]" },
+      { name: "", type: "uint256[]", internalType: "uint256[]" },
+      { name: "", type: "bytes", internalType: "bytes" },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "bytes4",
-        internalType: "bytes4",
-      },
-    ],
+    outputs: [{ name: "", type: "bytes4", internalType: "bytes4" }],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     name: "onERC1155Received",
     inputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "",
-        type: "bytes",
-        internalType: "bytes",
-      },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "uint256", internalType: "uint256" },
+      { name: "", type: "uint256", internalType: "uint256" },
+      { name: "", type: "bytes", internalType: "bytes" },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "bytes4",
-        internalType: "bytes4",
-      },
-    ],
+    outputs: [{ name: "", type: "bytes4", internalType: "bytes4" }],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     name: "onERC721Received",
     inputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "",
-        type: "bytes",
-        internalType: "bytes",
-      },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "address", internalType: "address" },
+      { name: "", type: "uint256", internalType: "uint256" },
+      { name: "", type: "bytes", internalType: "bytes" },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "bytes4",
-        internalType: "bytes4",
-      },
-    ],
+    outputs: [{ name: "", type: "bytes4", internalType: "bytes4" }],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     name: "promote",
     inputs: [
-      {
-        name: "amount",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "amount", type: "uint256", internalType: "uint256" },
+      { name: "tokenId", type: "uint256", internalType: "uint256" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -413,75 +185,33 @@ export const chamberAbi = [
   {
     type: "function",
     name: "proposal",
-    inputs: [
-      {
-        name: "proposalId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    inputs: [{ name: "proposalId", type: "uint256", internalType: "uint256" }],
     outputs: [
-      {
-        name: "approvals",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "state",
-        type: "uint8",
-        internalType: "enum IChamber.State",
-      },
+      { name: "approvals", type: "uint256", internalType: "uint256" },
+      { name: "state", type: "uint8", internalType: "enum IChamber.State" },
     ],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "setGuard",
-    inputs: [
-      {
-        name: "guard",
-        type: "address",
-        internalType: "address",
-      },
-    ],
+    inputs: [{ name: "guard", type: "address", internalType: "address" }],
     outputs: [],
     stateMutability: "nonpayable",
   },
   {
     type: "function",
     name: "supportsInterface",
-    inputs: [
-      {
-        name: "interfaceId",
-        type: "bytes4",
-        internalType: "bytes4",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
+    inputs: [{ name: "interfaceId", type: "bytes4", internalType: "bytes4" }],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "totalDelegation",
-    inputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    inputs: [{ name: "tokenID", type: "uint256", internalType: "uint256" }],
     outputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "amountDelegated", type: "uint256", internalType: "uint256" },
     ],
     stateMutability: "view",
   },
@@ -489,53 +219,21 @@ export const chamberAbi = [
     type: "function",
     name: "verifySignature",
     inputs: [
-      {
-        name: "proposalId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "tokenId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "signature",
-        type: "bytes",
-        internalType: "bytes",
-      },
+      { name: "proposalId", type: "uint256", internalType: "uint256" },
+      { name: "tokenId", type: "uint256", internalType: "uint256" },
+      { name: "signature", type: "bytes", internalType: "bytes" },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
     stateMutability: "view",
   },
   {
     type: "function",
     name: "voted",
     inputs: [
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "",
-        type: "uint256",
-        internalType: "uint256",
-      },
+      { name: "proposalId", type: "uint256", internalType: "uint256" },
+      { name: "tokenId", type: "uint256", internalType: "uint256" },
     ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool",
-      },
-    ],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
     stateMutability: "view",
   },
   {
@@ -642,12 +340,7 @@ export const chamberAbi = [
         indexed: false,
         internalType: "address",
       },
-      {
-        name: "amt",
-        type: "uint256",
-        indexed: false,
-        internalType: "uint256",
-      },
+      { name: "amt", type: "uint256", indexed: false, internalType: "uint256" },
       {
         name: "tokenId",
         type: "uint256",
@@ -674,12 +367,7 @@ export const chamberAbi = [
     type: "event",
     name: "Initialized",
     inputs: [
-      {
-        name: "version",
-        type: "uint8",
-        indexed: false,
-        internalType: "uint8",
-      },
+      { name: "version", type: "uint8", indexed: false, internalType: "uint8" },
     ],
     anonymous: false,
   },
@@ -693,12 +381,7 @@ export const chamberAbi = [
         indexed: false,
         internalType: "address",
       },
-      {
-        name: "amt",
-        type: "uint256",
-        indexed: false,
-        internalType: "uint256",
-      },
+      { name: "amt", type: "uint256", indexed: false, internalType: "uint256" },
       {
         name: "tokenId",
         type: "uint256",
@@ -746,55 +429,17 @@ export const chamberAbi = [
     ],
     anonymous: false,
   },
-  {
-    type: "error",
-    name: "executionFailed",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "insufficientBalance",
-    inputs: [],
-  },
+  { type: "error", name: "executionFailed", inputs: [] },
+  { type: "error", name: "insufficientBalance", inputs: [] },
   {
     type: "error",
     name: "invalidApproval",
-    inputs: [
-      {
-        name: "message",
-        type: "string",
-        internalType: "string",
-      },
-    ],
+    inputs: [{ name: "message", type: "string", internalType: "string" }],
   },
-  {
-    type: "error",
-    name: "invalidChangeAmount",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "invalidDemotion",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "invalidPromotion",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "invalidProposalState",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "invalidTokenOwner",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "invalidVote",
-    inputs: [],
-  },
+  { type: "error", name: "invalidChangeAmount", inputs: [] },
+  { type: "error", name: "invalidDemotion", inputs: [] },
+  { type: "error", name: "invalidPromotion", inputs: [] },
+  { type: "error", name: "invalidProposalState", inputs: [] },
+  { type: "error", name: "invalidTokenOwner", inputs: [] },
+  { type: "error", name: "invalidVote", inputs: [] },
 ] as const;

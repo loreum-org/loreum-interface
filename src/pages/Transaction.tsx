@@ -1,35 +1,9 @@
-import { CheckCircleIcon, CopyIcon, ExternalLinkIcon, Search2Icon } from '@chakra-ui/icons';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Grid,
-  FormControl,
-  InputGroup,
-  Input,
-  InputLeftElement,
-  Button,
-  Flex,
-  Hide,
-  GridItem,
-  Divider,
-  useDisclosure,
-  Text,
-  Skeleton,
-  Center,
-  Card,
-  CardBody,
-  Stack,
-  Heading,
-  FormLabel,
-  InputRightElement,
-  IconButton,
-  Alert,
-  AlertIcon,
-  useToast,
-  useColorModeValue
+import { CopyIcon, ExternalLinkIcon, Search2Icon } from '@chakra-ui/icons';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, Grid, FormControl, InputGroup, Input, InputLeftElement,
+  Button, Flex, Hide, GridItem, Divider, useDisclosure, Text, Skeleton, Center, Card, CardBody, Stack, Heading,
+  FormLabel, IconButton, Alert, AlertIcon, useToast, useColorModeValue
 } from '@chakra-ui/react';
-import { ByteArray, encodeAbiParameters } from 'viem'
+import { encodeAbiParameters } from 'viem'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import {
   Modal,
@@ -57,7 +31,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import request from 'graphql-request';
 import { getProposals } from '../gql/graphql';
-import { UseReadContractReturnType, useReadContract, useSignMessage, useWriteContract } from 'wagmi';
+import { useWriteContract } from 'wagmi';
 import { chamberAbi } from '../abi/chamberAbi';
 import Identicon from '../components/identicon';
 import { dataSource } from '../data';
@@ -95,10 +69,10 @@ interface createdProposals{
 }
 
 function Transaction(){
-  const [nftId, setNftId] = useState<string>('');
-  const [proposalId, setProposalId] = useState<string>('');
-  const [nftId1, setNftId1] = useState<number>(0);
-  const [proposalId1, setProposalId1] = useState<number>(0);
+  const [nftId, setNftId] = useState<number | undefined>();
+  const [proposalId, setProposalId] = useState<number | undefined>();
+  const [nftId1, setNftId1] = useState<number | undefined>();
+  const [proposalId1, setProposalId1] = useState<number | undefined>();
   const [cancelProposal, setCancelProposal] = useState('');
   const [cancelProposalID, setCancelProposalID] = useState('');
 
@@ -106,35 +80,18 @@ function Transaction(){
   const query = useQueryStore((state)=> state.query);
   const setQuery = useQueryStore((state)=> state.setQuery);
 
-  const { data: signMessageData, isPending , signMessage } = useSignMessage()
-  const signExecute = useSignMessage();
-
-  const constructMessageHash: UseReadContractReturnType = useReadContract({
-    abi: chamberAbi,
-    address: `0x${address?.slice(2)}`,
-    functionName: 'constructMessageHash',
-    args: [BigInt(proposalId1), BigInt(nftId1)],
-  });
-
-  const constructMessageHash1: UseReadContractReturnType = useReadContract({
-    abi: chamberAbi,
-    address: `0x${address?.slice(2)}`,
-    functionName: 'constructMessageHash',
-    args: [BigInt(proposalId), BigInt(nftId)],
-  });
-
   const {data, isLoading, isError} = useSimulateContract({
     address: `0x${address?.slice(2)}`,
     abi: chamberAbi,
     functionName: 'approve',
-    args: [BigInt(proposalId1), BigInt(nftId1), signMessageData?(signMessageData):'0x'],
+    args: [BigInt(proposalId1?proposalId1:"0"), BigInt(nftId1?nftId1:"0")],
   })
 
   const executeSimulate = useSimulateContract({
     address: `0x${address?.slice(2)}`,
     abi: chamberAbi,
     functionName: 'execute',
-    args: [BigInt(proposalId), BigInt(nftId), signExecute.data?(signExecute.data):'0x'],
+    args: [BigInt(proposalId?proposalId:"0"), BigInt(nftId?nftId:"0")]
   })
 
   const cancelSimulate = useSimulateContract({
@@ -155,7 +112,8 @@ function Transaction(){
       getProposals,
       {chamberAddress: address}
     ),
-    refetchOnMount: true
+    refetchOnMount: true,
+    staleTime: 60000
   })
 
   function getData(params:string) {
@@ -217,7 +175,6 @@ function Transaction(){
                 functionName: 'proposal',
                 args: [BigInt(proposal.proposalId)],
               });
-              console.log(data[0].toString(), data[1].toString());
               return {
                 proposalID: proposal.proposalId,
                 approvals: data?.[0]?.toString() || '',
@@ -242,8 +199,9 @@ function Transaction(){
           <ModalHeader>Receive</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Flex gap={2} alignItems={'center'}>
-            <Text fontSize={'md'}>{address}</Text>
+            <Flex gap={2} alignItems={'center'} alignContent={'center'}>
+              <Identicon address={address!} isize={20}/>
+              <Text fontSize={'md'}>{address}</Text>
             </Flex>
           </ModalBody>
           <ModalFooter gap={3}>
@@ -273,7 +231,7 @@ function Transaction(){
                               <Search2Icon/>
                           </Button>
                   </InputLeftElement>
-                  <Input onChange={(e) => setQuery(e.currentTarget.value)} value={query} placeholder="Search Transaction" variant={'filled'} overflow={'hidden'} rounded={'xl'}/>
+                  <Input isDisabled onChange={(e) => setQuery(e.currentTarget.value)} value={query} placeholder="Search Transaction" variant={'filled'} overflow={'hidden'} rounded={'xl'}/>
               </InputGroup>
         </FormControl>
       </Grid>
@@ -327,7 +285,7 @@ function Transaction(){
                           <GridItem _hover={{color:'blue.500'}}>
                             <a href={`http://sepolia.etherscan.io/tx/${proposal.transactionHash}`} target="_blank" rel="noopener noreferrer">
                               {proposal.transactionHash.slice(0, 5)}...{proposal.transactionHash.slice(63)}
-                              <IconButton aria-label="Copy" _hover={{color:'blue.500'}} variant={'ghost'} icon={<ExternalLinkIcon/>} size="xs" ml={2}/>
+                              <ExternalLinkIcon ml={3} h={3}/>
                             </a>
                           </GridItem>
                           <GridItem>{proposal.proposalId}</GridItem>
@@ -341,7 +299,7 @@ function Transaction(){
                           </GridItem>
                         </Grid>
                       </AccordionButton>
-                      <AccordionPanel my={3}>
+                      <AccordionPanel >
                         <Grid gap={2}>
                           <Divider/>
                           <GridItem>
@@ -393,7 +351,7 @@ function Transaction(){
                         ))}
                         </Flex>
                         <Flex gap={3}>
-                        <Button isDisabled={proposalStates[index].state!=='1'} variant={'outline'} size={'sm'} onClick={()=>{
+                        <Button colorScheme='red' isDisabled={proposalStates[index].state!=='1'} variant={'outline'} size={'sm'} onClick={()=>{
                           setCancelProposalID(proposal.proposalId)
                           getData(proposal.proposalId),
                           cancelModal.onOpen()
@@ -422,31 +380,14 @@ function Transaction(){
                 <Flex justifyContent={'end'} flexFlow={'row'} gap={5} >
                   <Flex flexFlow={'column'}>
                     <FormLabel>NFT ID</FormLabel>
-                    <Input w={'auto'} value={nftId1} type='number' onChange={(e)=>{if(e.target.value !== ''){setNftId1(parseInt(e.target.value))}}}  placeholder='Enter Your NFT ID'></Input>
+                    <Input w={'auto'} value={nftId1} type='number' onChange={(e)=>{{setNftId1(parseInt(e.target.value))}}}  placeholder='Enter Your NFT ID'></Input>
                   </Flex>
                   <Flex flexFlow={'column'}>
                     <FormLabel>Proposal ID</FormLabel>
-                    <Input w={'auto'} value={proposalId1} type='number' onChange={(e)=>{if(e.target.value !== ''){setProposalId1(parseInt(e.target.value))}}} placeholder='Enter Proposal ID'></Input>
+                    <Input w={'auto'} value={proposalId1} type='number' onChange={(e)=>{{setProposalId1(parseInt(e.target.value))}}} placeholder='Enter Proposal ID'></Input>
                   </Flex>
                 </Flex>
-                  <Flex flexFlow={'column'}>
-                    <FormLabel>Message Hash</FormLabel>
-                    <InputGroup>
-                    <Input w={'full'} isDisabled value={constructMessageHash.data as string}></Input>
-                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={constructMessageHash.isLoading} icon={<CheckCircleIcon/>}/></InputRightElement>
-                    </InputGroup>
-                  </Flex>
-                  <Flex flexFlow={'column'}>
-                    <FormLabel>Signature</FormLabel>
-                    <InputGroup>
-                    <Input value={signMessageData} isDisabled placeholder='Enter signature'></Input>
-                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={isPending} icon={<CheckCircleIcon/>}/></InputRightElement>
-                    </InputGroup>
-                  </Flex>
                 <Flex pt={3} justifyContent={'end'} gap={3}>
-                  <Button isLoading={isPending} onClick={()=>{
-                    signMessage({message: {raw: constructMessageHash.data as ByteArray}})
-                  }}>Sign</Button>
                   <Button isDisabled={!Boolean(data?.request)} onClick={()=>{
                     approveWriteContract.writeContract(data!.request)
                     }}>Approve</Button>
@@ -473,7 +414,10 @@ function Transaction(){
                         </a>
                       </GridItem>
                     </Grid>
-                  ):(<></>)}
+                  ):(<Flex gap={3}>
+                  <Text>Transaction Hash:</Text>
+                  0x0000..000
+                  </Flex>)}
                 </Flex>
                 <Flex pt={3}>
                   {isError?(
@@ -511,33 +455,16 @@ function Transaction(){
               <CardBody>
               <Flex flexFlow={'column'} gap={4}>
                 <Flex justifyContent={'end'} flexFlow={'row'} gap={5} >
-                  <Flex flexFlow={'column'}>
-                    <FormLabel>NFT ID</FormLabel>
-                    <Input w={'auto'} value={nftId} onChange={(e)=>{setNftId(e.target.value)}}   placeholder='Enter Your NFT ID'></Input>
+                  <Flex flexFlow={'column'} gap={3}>
+                    <Heading size={'sm'}>NFT ID</Heading>
+                    <Input w={'auto'} value={nftId} type='number' onChange={(e)=>{setNftId(parseInt(e.target.value))}}   placeholder='Enter Your NFT ID'></Input>
                   </Flex>
-                  <Flex flexFlow={'column'}>
-                    <FormLabel>Proposal ID</FormLabel>
-                    <Input w={'auto'} value={proposalId} onChange={(e)=>{setProposalId(e.target.value)}} placeholder='Enter Proposal ID'></Input>
+                  <Flex flexFlow={'column'} gap={3}>
+                    <Heading size={'sm'}>Proposal ID</Heading>
+                    <Input w={'auto'} value={proposalId}  type='number' onChange={(e)=>{setProposalId(parseInt(e.target.value))}} placeholder='Enter Proposal ID'></Input>
                   </Flex>
                 </Flex>
-                  <Flex flexFlow={'column'}>
-                    <FormLabel>Message Hash</FormLabel>
-                    <InputGroup>
-                    <Input w={'full'} isDisabled value={constructMessageHash1.data as string}></Input>
-                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={constructMessageHash1.isLoading} icon={<CheckCircleIcon/>}/></InputRightElement>
-                    </InputGroup>
-                  </Flex>
-                  <Flex flexFlow={'column'}>
-                    <FormLabel>Signature</FormLabel>
-                    <InputGroup>
-                    <Input value={signExecute.data} isDisabled placeholder='Enter signature'></Input>
-                    <InputRightElement><IconButton variant={'transparent'} aria-label='Loading Complete' isLoading={signExecute.isPending} icon={<CheckCircleIcon/>}/></InputRightElement>
-                    </InputGroup>
-                  </Flex>
                 <Flex pt={3} justifyContent={'end'} gap={3}>
-                  <Button isLoading={signExecute.isPending} onClick={()=>{
-                    signExecute.signMessage({message: {raw: constructMessageHash1.data as ByteArray}})
-                  }}>Sign</Button>
                   <Button isDisabled={!Boolean(executeSimulate.data?.request)} onClick={()=> executeWriteContract.writeContract(executeSimulate.data!.request)}>Execute</Button>
                 </Flex>
                 </Flex>
@@ -562,7 +489,10 @@ function Transaction(){
                         </a>
                       </GridItem>
                     </Grid>
-                  ):(<></>)}
+                  ):(<Flex gap={3}>
+                    <Text>Transaction Hash:</Text>
+                    0x0000..000
+                    </Flex>)}
                 </Flex>
                 <Flex pt={3}>
                   {executeSimulate.isError?(

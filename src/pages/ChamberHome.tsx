@@ -60,7 +60,7 @@ const ChamberHome = () => {
             <Divider/>
             <CardBody>
             <Flex alignItems={'center'} gap={3}>
-              <Box>
+              <Box _hover={{color:'blue.500'}}>
                 <a href={`http://sepolia.etherscan.io/address/${chamberDetails.data?.chamberDeployeds[0].memberToken}`} target="_blank" rel="noopener noreferrer">
                   {chamberDetails.data?.chamberDeployeds[0].govToken}
                   <IconButton size={'xs'} ml={3} aria-label="link" icon={<ExternalLinkIcon/>} />
