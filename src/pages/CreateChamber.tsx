@@ -13,7 +13,7 @@ function CreateChamber() {
   const [memberToken, setMemberToken] = useState('');
   const simulateDeployChamber = useSimulateContract({
     abi: registryAbi,
-    address: '0x46A49D4391F2F220D3661b2a2BFe4b306EE18845',
+    address: '0xB3a7323b70A29604686a2da4d053cF429BAC4E7E',
     functionName: 'deploy',
     args: [memberToken, govToken],
   })
