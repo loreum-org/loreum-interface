@@ -8,4 +8,7 @@ export interface ERC20 {
     balance: string,
     possible_spam: boolean,
     verified_collection: boolean,
+    total_supply: string,
+    total_supply_formatted: string,
+    percentage_relative_to_total_supply: number
 }

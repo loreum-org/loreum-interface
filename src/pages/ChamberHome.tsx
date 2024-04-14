@@ -6,7 +6,8 @@ import { useParams } from "react-router-dom"
 import NotFoundPage from "./NotFoundPage"
 import { dataSource } from "../data"
 import { Box, Card, CardBody, Divider, Flex, Grid, HStack, Heading, IconButton, Skeleton, Text, useColorModeValue, useToast } from "@chakra-ui/react"
-import { CopyIcon, ExternalLinkIcon } from "@chakra-ui/icons"
+import { CopyIcon, ExternalLinkIcon, Search2Icon } from "@chakra-ui/icons"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input } from "@chakra-ui/react"
 
 const ChamberHome = () => {
   const {address} = useParams()
@@ -33,6 +34,26 @@ const ChamberHome = () => {
   const toast = useToast();
   return (
     <>
+    <Grid pb={'1rem'} fontSize={['xs','sm']} justifyContent={'space-between'} alignItems={'center'} templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)']} gap={3} >
+        <Breadcrumb fontWeight={'semibold'}>
+        <BreadcrumbItem>
+            <BreadcrumbLink>{address ? address.slice(0,4): ''}...{address ? address.slice(38,42) : ''}</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+            <BreadcrumbLink isCurrentPage>Home</BreadcrumbLink>
+        </BreadcrumbItem>
+        </Breadcrumb>
+        <FormControl>
+            <InputGroup size='md'>
+                <InputLeftElement  justifyContent={'start'}>
+                        <Button type={'submit'} borderRightRadius={0} rounded={'xl'} size='sm' variant={'transparent'}>
+                            <Search2Icon/>
+                        </Button>
+                </InputLeftElement>
+                <Input isDisabled placeholder="Search Transaction" variant={'filled'} overflow={'hidden'} rounded={'xl'}/>
+            </InputGroup>
+        </FormControl>
+      </Grid>
     {
       (chamberDetails.isRefetching || chamberDetails.isFetching || chamberDetails.isLoading) && (chamberDetails.data?.chamberDeployeds.length !== 0)?(
         <>
@@ -61,7 +82,7 @@ const ChamberHome = () => {
             <CardBody>
             <Flex alignItems={'center'} gap={3}>
               <Box _hover={{color:'blue.500'}}>
-                <a href={`http://sepolia.etherscan.io/address/${chamberDetails.data?.chamberDeployeds[0].memberToken}`} target="_blank" rel="noopener noreferrer">
+                <a href={`http://sepolia.etherscan.io/address/${chamberDetails.data?.chamberDeployeds[0].govToken}`} target="_blank" rel="noopener noreferrer">
                   {chamberDetails.data?.chamberDeployeds[0].govToken}
                   <IconButton size={'xs'} ml={3} aria-label="link" icon={<ExternalLinkIcon/>} />
                 </a>
