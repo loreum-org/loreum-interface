@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Center , Button, Text, Flex} from "@chakra-ui/react";
 
 function Error() {
@@ -9,9 +8,13 @@ function Error() {
             <Text>
                 Something Went Wrong
             </Text>
-            <Button as={Link} to={'/'} size={'sm'}>
+              <a href="/" rel="noopener noreferrer">
+                <Flex justifyContent={'center'}>
+                <Button size={'sm'}>
                 Reload
-            </Button>
+                </Button>
+                </Flex>
+              </a>
         </Flex>
     </Center>
     </>

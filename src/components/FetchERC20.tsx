@@ -3,24 +3,24 @@ import { ERC20 } from '../hooks/interfaces';
 
 export const useFetchTokens = (chamberAddress: string) => {
     return useQuery<ERC20[]>({
-        queryKey:['tokenData'], 
-        queryFn: async ():Promise<ERC20[]> => {
-            const response = await fetch(
-              `https://deep-index.moralis.io/api/v2.2/${chamberAddress}/erc20?chain=sepolia`,
-              {
-                headers: {
-                  'accept': 'application/json',
-                  'X-API-Key': import.meta.env.VITE_MORALIS_API_KEY
-                }
+      queryKey:['tokenData'], 
+      queryFn: async ():Promise<ERC20[]> => {
+          const response = await fetch(
+            `https://deep-index.moralis.io/api/v2.2/${chamberAddress}/erc20?chain=sepolia`,
+            {
+              headers: {
+                'accept': 'application/json',
+                'X-API-Key': import.meta.env.VITE_MORALIS_API_KEY
               }
-            );
-          
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
             }
-          
-            return response.json();
+          );
+        
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
           }
+        
+          return response.json();
+      },
     });
 };
 interface balance{
@@ -45,7 +45,7 @@ export const useFetchNativeBalance = (chamberAddress: string) => {
             }
           
             return response.json();
-          }
+        },
     });
 };
 
@@ -120,6 +120,5 @@ export const useFetchNfts = (chamberAddress: string) => {
     
       return response.json();
     },
-    staleTime: 60000
   });
 }

@@ -1,5 +1,5 @@
 import { ExternalLinkIcon, Search2Icon } from "@chakra-ui/icons"
-import { Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, Flex, GridItem, Divider, Skeleton, Box } from "@chakra-ui/react"
+import { Grid, Breadcrumb, BreadcrumbItem, BreadcrumbLink, FormControl, InputGroup, InputLeftElement, Button, Input, Flex, GridItem, Divider, Skeleton, Box, Text, Center } from "@chakra-ui/react"
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { Link, useParams } from "react-router-dom"
 import { useFetchNativeBalance, useFetchNfts, useFetchTokens } from "../components/FetchERC20";
@@ -43,11 +43,10 @@ function Assests(){
         <TabPanels>
           <TabPanel>
             {/* Token Pannel */}
-            <Grid templateColumns={'repeat(4, 1fr)'} gap={3} fontSize={'xs'} fontWeight={'bold'} pb={3} color={'gray.500'}>
+            <Grid templateColumns={'repeat(3, 1fr)'} gap={3} fontSize={'xs'} fontWeight={'bold'} pb={3} color={'gray.500'}>
               <GridItem>Token Name</GridItem>
               <GridItem>Token Address</GridItem>
               <GridItem>Token Balance</GridItem>
-              <GridItem>Verified Collection</GridItem>
             </Grid>
             <Divider/>
             <Box h={4}></Box>
@@ -57,11 +56,11 @@ function Assests(){
               </Flex>
             </>):(
               <>
-              <Grid templateColumns={'repeat(4, 1fr)'} gap={3} pb={3}>
+              <Grid templateColumns={'repeat(3, 1fr)'} gap={3} pb={3}>
               <GridItem>{"Sepolia"}</GridItem>
               <GridItem>{"None"}</GridItem>
               <GridItem>{formatEther((data1.data?BigInt(data1.data.balance):BigInt(0)),"wei").toString()} ETH</GridItem>
-              <GridItem>{"Verified"}</GridItem>
+              <GridItem colSpan={4}><Divider/></GridItem>
               </Grid>
               </>
             )}
@@ -72,30 +71,50 @@ function Assests(){
                 <Skeleton h={"2rem"} rounded={'lg'}></Skeleton>
                 <Skeleton h={"2rem"} rounded={'lg'}></Skeleton>
               </Flex>
-            ):data.data?.map((token)=>(
-              <Grid templateColumns={'repeat(4, 1fr)'} gap={3}>
+            ):data.data?.map((token, index)=>(
+              <Grid templateColumns={'repeat(3, 1fr)'} gap={3} pb={3} key={index}>
                 <GridItem>{token.name}</GridItem>
                 <GridItem _hover={{color:"skyblue"}}>
                   <a href={`http://sepolia.etherscan.io/address/${token.token_address}`} target="_blank" rel="noopener noreferrer">
-                    <Flex gap={3} alignItems={'center'}>
+                    <Flex gap={3} alignItems={'center'} >
                     {token.token_address.slice(0,5)}...{token.token_address.slice(-3)} 
                     <ExternalLinkIcon bgSize={"1.5rem"}/>
                     </Flex>
                   </a>
                 </GridItem>
-                <GridItem>{token.balance} {token.symbol}</GridItem>
-                <GridItem>{token.verified_collection?"Verified":"Not Verified"}</GridItem>
+                <GridItem>{formatEther(BigInt(token.balance))} {token.symbol}</GridItem>
+                <GridItem colSpan={4}>
+                  <Divider/>
+                </GridItem>
               </Grid>
             ))}
 
           </TabPanel>
           <TabPanel>
               <Flex gap={4} flexWrap={'wrap'}> 
-                {nft.isSuccess?nft.data.result?.map((nft)=>(
+                {nft.isLoading?(
                   <>
-                  <NFTCard name={nft.name} tokenID={nft.token_id} image={''}/>
+                  <Skeleton rounded={'xl'} h={'320px'} w={'300px'}></Skeleton>
+                  <Skeleton rounded={'xl'} h={'320px'} w={'300px'}></Skeleton>
+                  <Skeleton rounded={'xl'} h={'320px'} w={'300px'}></Skeleton>
                   </>
-                )):(<>Loading...</>)}
+                ):(
+                <>
+                {nft.data?.result?.length==0?(
+                  <Center w={'full'}>
+                    <Text>No NFTs Found</Text>
+                  </Center>
+                ):(
+                  <>
+                  {nft.data?.result?.map((nft, index)=>(
+                    <div key={index}>
+                    <NFTCard name={nft.name} tokenID={nft.token_id} image={nft.media?.media_collection?.medium.url?nft.media.media_collection.medium.url:""}/>
+                    </div>
+                  ))}
+                  </>
+                )}
+                </>
+              )}
               </Flex>
           </TabPanel>
         </TabPanels>
