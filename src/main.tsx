@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Nav from "./components/NavBar";
@@ -29,7 +29,7 @@ import NFT from "./pages/NFT";
 import { config } from "./config";
 import CreateChamber from "./pages/CreateChamber";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <Home />,
