@@ -8,6 +8,6 @@ export const config = getDefaultConfig({
     chains: [mainnet, sepolia],
     transports: {
       [mainnet.id]: http(),
-      [sepolia.id]: http('https://sepolia.infura.io/v3/615016a7e58a4ad0ad688a4a5849d55f'),
+      [sepolia.id]: http('https://rpc.ankr.com/eth_sepolia/b8296c414c45b6feee3e95b523cd70b9d9ffacc3563ecb040532183efc064b18'),
     },
   });
